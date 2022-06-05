@@ -83,10 +83,14 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 	}
 	
 	
-	public static string python(string python_path, string prs_path){
+	public static string python(string python_path, string script_path, string prs_path){
 		string BASE_PROJECT_PATH = Directory.GetCurrentDirectory();
-		string SCRIPT_PATH = BASE_PROJECT_PATH + "/Assets/Scripts/runScenarioRaw.py";
-		string SCENARIO_PATH = BASE_PROJECT_PATH + "/"+ prs_path;
+		
+		string SCRIPT_PATH = "\"" + BASE_PROJECT_PATH + "/" + script_path + "/runScenarioRaw.py" + "\"";
+		string SCENARIO_PATH = "\"" + BASE_PROJECT_PATH + "/"+ prs_path  + "\"";
+		
+		//Debug.Log(m_ScriptFilePath);
+		//Debug.Log(SCENARIO_PATH);
 		
 		Process process = new Process();
 		

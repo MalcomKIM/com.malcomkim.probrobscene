@@ -17,7 +17,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 	{
 		List<ModelItem> ModelItems = new List<ModelItem>();
 		static string BASE_PROJECT_PATH = "";
-		string prefabs_path = ""; // prefabs_path = "Prefabs/Part1/" 
+		string prefabs_folder_path = ""; // prefabs_folder_path = "Assets/Prefabs/Part1" 
 		
 		GameObject Models;
 		Object UrdfObject;
@@ -59,7 +59,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			//=============== Prefab part ===============
 			GUILayout.Space(10);
 			GUILayout.Label("Prefabs", titleStyle);
-			prefabs_path = EditorGUILayout.TextField("Prefabs path: ", prefabs_path);
+			prefabs_folder_path = EditorGUILayout.TextField("Prefabs path: ", prefabs_folder_path);
 			
 			
 			//=============== Robot part ===============
@@ -82,20 +82,20 @@ namespace Unity.Robotics.UrdfImporter.Editor
 				Models = new GameObject("Models");
 				
 				//=============== Load prefabs ===============
-				if (prefabs_path != ""){
+				if (prefabs_folder_path != ""){
 					//string BASE_PROJECT_PATH = Directory.GetCurrentDirectory();
 					//Debug.Log(BASE_PROJECT_PATH);
-					string PREFABS_FOLDER_PATH =  BASE_PROJECT_PATH + "/Assets/Resources/" + prefabs_path;
-					//Debug.Log(PREFABS_FOLDER_PATH);
-					DirectoryInfo d = new DirectoryInfo(@PREFABS_FOLDER_PATH);
+					//string PREFABS_FOLDER_PATH =  prefabs_folder_path;
+					Debug.Log(prefabs_folder_path);
+					DirectoryInfo d = new DirectoryInfo(@prefabs_folder_path);
 					FileInfo[] Files = d.GetFiles("*.prefab");
 					
 					foreach(FileInfo file in Files)
 					{
 						string _prefab = System.IO.Path.GetFileNameWithoutExtension(file.Name);
-						string prefab = prefabs_path + _prefab;
-						//Debug.Log(prefab);
-						GameObject obj = (GameObject)Instantiate(Resources.Load(prefab));
+						string prefab = prefabs_folder_path + "/"+ _prefab + ".prefab";
+						Debug.Log(prefab);
+						GameObject obj = Instantiate(AssetDatabase.LoadAssetAtPath(prefab,typeof(GameObject))) as GameObject;
 						obj.name= _prefab;
 						obj.transform.parent = Models.transform;
 					}
@@ -165,18 +165,23 @@ namespace Unity.Robotics.UrdfImporter.Editor
 		
 		
 		IEnumerator BuildScene(){
+			MonoScript ms = MonoScript.FromScriptableObject(this);
+			string m_ScriptFilePath = AssetDatabase.GetAssetPath(ms);
+			string ScriptPath = Path.GetDirectoryName(m_ScriptFilePath);
 			
 			string PrsPath = AssetDatabase.GetAssetPath(textPRS);
 			string PrsName = System.IO.Path.GetFileNameWithoutExtension(PrsPath);	
-			string json_result = Utils.python(PythonPath, PrsPath);
-			Debug.Log(json_result);
+			string json_result = Utils.python(PythonPath, ScriptPath, PrsPath);
+			
+			//Debug.Log(PrsPath);
+			//Debug.Log(json_result);
 			
 			// Get information of items in the scene
 			SceneItemList SceneItems = JsonUtility.FromJson<SceneItemList>(json_result);
 			
 			// Transparent Red boxes
 			GameObject References = new GameObject("References");
-			Material TransparentRed = Resources.Load("Materials/TransparentRed", typeof(Material)) as Material;
+			Material TransparentRed = (Material)AssetDatabase.LoadAssetAtPath("Assets/Materials/TransparentRed", typeof(Material));
 	 
 			foreach (SceneItem o in SceneItems.objects)
 			{	
