@@ -2,7 +2,7 @@
 	"name": "com.malcomkim.probrobscene",
 	"displayName": "ProbrobScene for Unity",
 	"version": "1.0.0",
-	"unity": "2020.3.30f1",
+	"unity": "2020.3",
 	"author": "Malcom Kim",
 	"description": "ProbrobScene for Unity",
 	"dependencies": {
