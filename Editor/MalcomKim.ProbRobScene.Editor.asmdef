@@ -1,0 +1,21 @@
+{
+    "name": "MalcomKim.ProbRobScene.Editor",
+    "rootNamespace": "",
+    "references": [
+        "Unity.EditorCoroutines.Editor",
+        "Unity.Robotics.UrdfImporter",
+        "vhacd",
+        "Unity.Robotics.UrdfImporter.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,15 @@
+{
+	"name": "com.malcomkim.probrobscene",
+	"displayName": "ProbrobScene for Unity",
+	"version": "1.0.0",
+	"unity": "2020.3.30f1",
+	"author": "Malcom Kim",
+	"description": "ProbrobScene for Unity",
+	"dependencies": {
+		"URDF Importer": "0.5.2-preview"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/MalcomKIM/com.malcomkim.probrobscene.git"
+	}
+}
