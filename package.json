@@ -6,7 +6,7 @@
 	"author": "Malcom Kim",
 	"description": "ProbrobScene for Unity",
 	"dependencies": {
-		"URDF Importer": "0.5.2-preview"
+		"com.unity.robotics.urdf-importer": "0.5.2-preview"
 	},
 	"repository": {
 		"type": "git",
