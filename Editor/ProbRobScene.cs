@@ -219,10 +219,23 @@ namespace Unity.Robotics.UrdfImporter.Editor
 				GameObject clone = Instantiate(GameObject.Find(Models.transform.name + "/" + o.model_name));
 				clone.name = o.model_name;
 				
-				// Calculate displacement
-				Vector3 center = Utils.CaptureBounds(clone).center;
-				clone.transform.position += new Vector3(o.position_x, o.position_y, o.position_z) - center;
 				clone.transform.Rotate(o.rotation_x, o.rotation_y, o.rotation_z);
+				
+				Bounds bounds = Utils.CaptureBounds(clone);
+				// Calculate displacement
+				Vector3 center = bounds.center;
+				clone.transform.position += new Vector3(o.position_x, o.position_y, o.position_z) - center;
+				
+				
+				// Calculate scale from size
+				float orig_width = bounds.extents.x * 2;
+				float orig_height = bounds.extents.y * 2;
+				float orig_length = bounds.extents.z * 2;
+				
+				Vector3 scale = new Vector3(o.size_x / orig_width, o.size_y / orig_height, o.size_z / orig_length);
+				clone.transform.localScale = Vector3.Scale(clone.transform.localScale, scale);
+				
+				
 				clone.transform.parent = Scene.transform;
 			}
 			
