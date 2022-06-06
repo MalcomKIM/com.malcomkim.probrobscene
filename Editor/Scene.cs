@@ -19,9 +19,9 @@ public class SceneItem
 	public float rotation_y;
 	public float rotation_z;
 	
-	public float scale_x;
-	public float scale_y;
-	public float scale_z;
+	public float size_x;
+	public float size_y;
+	public float size_z;
 }
 
 [System.Serializable]

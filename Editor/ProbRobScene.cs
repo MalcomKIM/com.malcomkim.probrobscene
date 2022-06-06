@@ -204,7 +204,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			{	
 				GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 				cube.name = o.model_name;
-				cube.transform.localScale = new Vector3 (o.scale_x, o.scale_y, o.scale_z);
+				cube.transform.localScale = new Vector3 (o.size_x, o.size_y, o.size_z);
 				cube.transform.position = new Vector3(o.position_x, o.position_y, o.position_z);
 				cube.transform.rotation = Quaternion.Euler(new Vector3(o.rotation_x, o.rotation_y, o.rotation_z));
 				cube.GetComponent<Renderer>().material = TransparentRed;

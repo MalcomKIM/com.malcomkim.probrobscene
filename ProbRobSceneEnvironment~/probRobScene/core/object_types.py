@@ -337,9 +337,9 @@ class Object(Point3D):
             'rotation_x': self.orientation.x,
             'rotation_y': self.orientation.z,
             'rotation_z': self.orientation.y,
-            'scale_x': self.width,
-            'scale_y': self.height,
-            'scale_z': self.length
+            'size_x': self.width,
+            'size_y': self.height,
+            'size_z': self.length
                 }
     
 
