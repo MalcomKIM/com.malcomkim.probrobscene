@@ -15,20 +15,26 @@ namespace Unity.Robotics.UrdfImporter.Editor
 {
 	public class ProbRobScene : EditorWindow
 	{
-		List<ModelItem> ModelItems = new List<ModelItem>();
-		static string BASE_PROJECT_PATH = "";
-		string prefabs_folder_path = ""; // prefabs_folder_path = "Assets/Prefabs/Part1" 
+		// Package paths
+		string PACKAGE_PATH="";
+		string PACKAGE_EDITOR_PATH="";
 		
-		GameObject Models;
-		Object UrdfObject;
-		string RobotName;
-		string RobotObjName;
-		float progress = 0.0f;
+		// INPUT: Prefabs
+		string prefabs_folder_path = ""; // Example: Assets/Prefabs/Part1
+		
+		// INPUT: Robot
+		GameObject Models;	// hold all the models in the world
+		Object UrdfObject;	// urdf input placeholder
+		string RobotName;	// robot name with extension
+		string _RobotName;	// robot name without extension
 		ImportSettings settings = new ImportSettings();
+		float progress = 0.0f; // Robot Loading Progress, used for delay
 		
+		// INPUT: Python Path
 		string PythonPath="";
-		TextAsset textPRS;
 		
+		// INPUT: prs file
+		TextAsset textPRS;
 		
 
 		[MenuItem("Tests/ProbRobScene")]
@@ -42,10 +48,17 @@ namespace Unity.Robotics.UrdfImporter.Editor
 		{
 			Repaint();
 		}
+		
+		public void OnEnable()
+		{
+			PACKAGE_PATH = getPackagePath();
+			PACKAGE_EDITOR_PATH = PACKAGE_PATH + "\\Editor";
+			Debug.Log(PACKAGE_PATH);
+			Debug.Log(PACKAGE_EDITOR_PATH);
+		}
 
 		void OnGUI ()
 		{
-			BASE_PROJECT_PATH = Directory.GetCurrentDirectory();
 			// GUI Style
 			GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel)
 			{
@@ -79,6 +92,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			GUILayout.Space(20);
 			if (GUILayout.Button("Generate Scene"))
 			{
+				Debug.Log(getPackagePath());
 				Models = new GameObject("Models");
 				
 				//=============== Load prefabs ===============
@@ -106,7 +120,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 				if (UrdfObject != null) {
 					RobotName = AssetDatabase.GetAssetPath(UrdfObject);
 					
-					RobotObjName = System.IO.Path.GetFileNameWithoutExtension(RobotName);
+					_RobotName = System.IO.Path.GetFileNameWithoutExtension(RobotName);
 				
 					if (RobotName != ""){
 						EditorCoroutineUtility.StartCoroutine(UrdfRobotExtensions.Create(RobotName, settings,false), this);
@@ -123,6 +137,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 
 		IEnumerator BuildModels()
 		{
+			List<ModelItem> ModelItems = new List<ModelItem>();
 			// Wait until .urdf is loaded
 			while (progress<1){
 				progress = (settings.totalLinks == 0) ? 0 : ((float)settings.linksLoaded / (float)settings.totalLinks);
@@ -131,7 +146,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			}
 			
 			// Add robot into the scene as a child node
-			GameObject robot = GameObject.Find(RobotObjName);
+			GameObject robot = GameObject.Find(_RobotName);
 			robot.transform.parent = Models.transform;
 			
 			// reset progress
@@ -156,26 +171,18 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			// Generate Model.prs
 			Utils.CreateModelPrs(ModelItems);
 			
-			// Empty the item list
-			ModelItems = new List<ModelItem>();
-			
 			// Start building the scene from give .prs
 			EditorCoroutineUtility.StartCoroutine(BuildScene(),this);
 		}
 		
 		
 		IEnumerator BuildScene(){
-			MonoScript ms = MonoScript.FromScriptableObject(this);
-			string m_ScriptFilePath = AssetDatabase.GetAssetPath(ms);
-			// string ScriptName = "runScenarioRaw.py";
-			string ScriptPath = Path.GetDirectoryName(Path.GetFullPath(m_ScriptFilePath));
 			
 			string PrsPath = AssetDatabase.GetAssetPath(textPRS);
 			string PrsName = System.IO.Path.GetFileNameWithoutExtension(PrsPath);	
-			string json_result = Utils.python(PythonPath, ScriptPath, PrsPath);
+			string json_result = Utils.python(PythonPath, PACKAGE_EDITOR_PATH, PrsPath);
 			
 			Debug.Log(PythonPath);
-			Debug.Log(ScriptPath);
 			Debug.Log(PrsPath);
 			
 			//Debug.Log(PrsPath);
@@ -186,7 +193,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			
 			// Transparent Red boxes
 			GameObject References = new GameObject("References");
-			Material TransparentRed = (Material)AssetDatabase.LoadAssetAtPath("Assets/Materials/TransparentRed", typeof(Material));
+			Material TransparentRed = (Material)AssetDatabase.LoadAssetAtPath("Assets/Materials/TransparentRed.mat", typeof(Material));
 	 
 			foreach (SceneItem o in SceneItems.objects)
 			{	
@@ -219,6 +226,14 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			//References.SetActive(false);
 			
 			yield return new WaitForSeconds(0.1f);
+		}
+		
+		string getPackagePath(){
+			MonoScript ms = MonoScript.FromScriptableObject(this);
+			string m_ScriptFilePath = AssetDatabase.GetAssetPath(ms);
+			string editorPath = Path.GetDirectoryName(Path.GetFullPath(m_ScriptFilePath));
+			string packagePath = Directory.GetParent(editorPath).FullName;
+			return packagePath;
 		}
 
 	}
