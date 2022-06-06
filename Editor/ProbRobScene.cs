@@ -167,14 +167,19 @@ namespace Unity.Robotics.UrdfImporter.Editor
 		IEnumerator BuildScene(){
 			MonoScript ms = MonoScript.FromScriptableObject(this);
 			string m_ScriptFilePath = AssetDatabase.GetAssetPath(ms);
-			string ScriptPath = Path.GetDirectoryName(m_ScriptFilePath);
+			// string ScriptName = "runScenarioRaw.py";
+			string ScriptPath = Path.GetDirectoryName(Path.GetFullPath(m_ScriptFilePath));
 			
 			string PrsPath = AssetDatabase.GetAssetPath(textPRS);
 			string PrsName = System.IO.Path.GetFileNameWithoutExtension(PrsPath);	
 			string json_result = Utils.python(PythonPath, ScriptPath, PrsPath);
 			
+			Debug.Log(PythonPath);
+			Debug.Log(ScriptPath);
+			Debug.Log(PrsPath);
+			
 			//Debug.Log(PrsPath);
-			//Debug.Log(json_result);
+			Debug.Log(json_result);
 			
 			// Get information of items in the scene
 			SceneItemList SceneItems = JsonUtility.FromJson<SceneItemList>(json_result);

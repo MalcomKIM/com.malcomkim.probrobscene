@@ -1,5 +1,5 @@
-import sys
-sys.path.append('..\ProbRobSceneEnvironment~')
+import sys,os
+sys.path.append(os.path.dirname(__file__)+'\..\ProbRobSceneEnvironment~')
 import probRobScene
 
 
