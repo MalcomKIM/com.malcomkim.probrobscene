@@ -15,9 +15,13 @@ namespace Unity.Robotics.UrdfImporter.Editor
 {
 	public class ProbRobScene : EditorWindow
 	{
-		// Package paths
-		string PACKAGE_PATH="";
-		string PACKAGE_EDITOR_PATH="";
+		// Absolute package paths
+		string ABS_PACKAGE_PATH;
+		string ABS_PACKAGE_EDITOR_PATH;
+		
+		// Relative package paths
+		string REL_PACKAGE_PATH="Packages\\com.malcomkim.probrobscene";
+		string REL_PACKAGE_MATERIALS_PATH;
 		
 		// INPUT: Prefabs
 		string prefabs_folder_path = ""; // Example: Assets/Prefabs/Part1
@@ -51,10 +55,12 @@ namespace Unity.Robotics.UrdfImporter.Editor
 		
 		public void OnEnable()
 		{
-			PACKAGE_PATH = getPackagePath();
-			PACKAGE_EDITOR_PATH = PACKAGE_PATH + "\\Editor";
-			Debug.Log(PACKAGE_PATH);
-			Debug.Log(PACKAGE_EDITOR_PATH);
+			ABS_PACKAGE_PATH = getPackageAbsPath();
+			ABS_PACKAGE_EDITOR_PATH = ABS_PACKAGE_PATH + "\\Editor";
+			REL_PACKAGE_MATERIALS_PATH= REL_PACKAGE_PATH + "\\Materials";
+			Debug.Log(ABS_PACKAGE_PATH);
+			Debug.Log(ABS_PACKAGE_EDITOR_PATH);
+			Debug.Log(REL_PACKAGE_MATERIALS_PATH);
 		}
 
 		void OnGUI ()
@@ -92,7 +98,6 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			GUILayout.Space(20);
 			if (GUILayout.Button("Generate Scene"))
 			{
-				Debug.Log(getPackagePath());
 				Models = new GameObject("Models");
 				
 				//=============== Load prefabs ===============
@@ -107,7 +112,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 					foreach(FileInfo file in Files)
 					{
 						string _prefab = System.IO.Path.GetFileNameWithoutExtension(file.Name);
-						string prefab = prefabs_folder_path + "/"+ _prefab + ".prefab";
+						string prefab = prefabs_folder_path + "\\"+ _prefab + ".prefab";
 						Debug.Log(prefab);
 						GameObject obj = Instantiate(AssetDatabase.LoadAssetAtPath(prefab,typeof(GameObject))) as GameObject;
 						obj.name= _prefab;
@@ -180,7 +185,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			
 			string PrsPath = AssetDatabase.GetAssetPath(textPRS);
 			string PrsName = System.IO.Path.GetFileNameWithoutExtension(PrsPath);	
-			string json_result = Utils.python(PythonPath, PACKAGE_EDITOR_PATH, PrsPath);
+			string json_result = Utils.python(PythonPath, ABS_PACKAGE_EDITOR_PATH, PrsPath);
 			
 			Debug.Log(PythonPath);
 			Debug.Log(PrsPath);
@@ -192,8 +197,8 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			SceneItemList SceneItems = JsonUtility.FromJson<SceneItemList>(json_result);
 			
 			// Transparent Red boxes
-			GameObject References = new GameObject("References");
-			Material TransparentRed = (Material)AssetDatabase.LoadAssetAtPath("Assets/Materials/TransparentRed.mat", typeof(Material));
+			GameObject References = new GameObject("References"); 
+			Material TransparentRed = (Material)AssetDatabase.LoadAssetAtPath(REL_PACKAGE_MATERIALS_PATH + "\\TransparentRed.mat", typeof(Material));
 	 
 			foreach (SceneItem o in SceneItems.objects)
 			{	
@@ -228,7 +233,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			yield return new WaitForSeconds(0.1f);
 		}
 		
-		string getPackagePath(){
+		string getPackageAbsPath(){
 			MonoScript ms = MonoScript.FromScriptableObject(this);
 			string m_ScriptFilePath = AssetDatabase.GetAssetPath(ms);
 			string editorPath = Path.GetDirectoryName(Path.GetFullPath(m_ScriptFilePath));
