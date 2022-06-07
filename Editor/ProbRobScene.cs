@@ -114,9 +114,24 @@ namespace Unity.Robotics.UrdfImporter.Editor
 						string _prefab = System.IO.Path.GetFileNameWithoutExtension(file.Name);
 						string prefab = prefabs_folder_path + "\\"+ _prefab + ".prefab";
 						Debug.Log(prefab);
-						GameObject obj = Instantiate(AssetDatabase.LoadAssetAtPath(prefab,typeof(GameObject))) as GameObject;
-						obj.name= _prefab;
-						obj.transform.parent = Models.transform;
+						GameObject go = Instantiate(AssetDatabase.LoadAssetAtPath(prefab,typeof(GameObject))) as GameObject;
+						
+						if(go.transform.rotation == Quaternion.identity){
+							go.name= _prefab;
+							go.transform.parent = Models.transform;
+						}
+						else{
+							GameObject wrapper = new GameObject(_prefab);
+							go.name= _prefab+"_prefab";
+							
+							Bounds bounds = Utils.CaptureBounds(go);
+							wrapper.transform.position = bounds.center;
+							wrapper.transform.localScale = Utils.getBoundsSize(bounds);
+							
+							go.transform.parent = wrapper.transform;
+							wrapper.transform.parent = Models.transform;
+						}
+						
 					}
 				}
 				
@@ -161,15 +176,12 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			foreach (Transform child in Models.transform)
 			{
 				// Debug.Log(child.name);
-				GameObject gobj = GameObject.Find(Models.transform.name + "/" + child.name);
+				GameObject go = GameObject.Find(Models.transform.name + "/" + child.name);
 
-				Bounds bounds = Utils.CaptureBounds(gobj);
+				Bounds bounds = Utils.CaptureBounds(go);
+				Vector3 size = Utils.getBoundsSize(bounds);
 
-				float width = bounds.extents.x * 2;
-				float height = bounds.extents.y * 2;
-				float length = bounds.extents.z * 2;
-
-				ModelItem mi = new ModelItem(gobj,width,height,length,child.name);
+				ModelItem mi = new ModelItem(go, size.x, size.y, size.z, child.name);
 				ModelItems.Add(mi);
 			}
 			
@@ -219,7 +231,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 				GameObject clone = Instantiate(GameObject.Find(Models.transform.name + "/" + o.model_name));
 				clone.name = o.model_name;
 				
-				clone.transform.Rotate(o.rotation_x, o.rotation_y, o.rotation_z);
+				// clone.transform.Rotate(o.rotation_x, o.rotation_y, o.rotation_z);
 				
 				Bounds bounds = Utils.CaptureBounds(clone);
 				// Calculate displacement
@@ -228,12 +240,14 @@ namespace Unity.Robotics.UrdfImporter.Editor
 				
 				
 				// Calculate scale from size
-				float orig_width = bounds.extents.x * 2;
-				float orig_height = bounds.extents.y * 2;
-				float orig_length = bounds.extents.z * 2;
+				Vector3 exp_size = new Vector3(o.size_x, o.size_y, o.size_z);
+				Vector3 ori_size = Utils.getBoundsSize(bounds);
 				
-				Vector3 scale = new Vector3(o.size_x / orig_width, o.size_y / orig_height, o.size_z / orig_length);
+				Vector3 scale = Utils.CalculateScale(exp_size, ori_size);
 				clone.transform.localScale = Vector3.Scale(clone.transform.localScale, scale);
+				
+				
+				clone.transform.Rotate(o.rotation_x, o.rotation_y, o.rotation_z);
 				
 				
 				clone.transform.parent = Scene.transform;
