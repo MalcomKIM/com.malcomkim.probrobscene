@@ -234,10 +234,6 @@ namespace Unity.Robotics.UrdfImporter.Editor
 				// clone.transform.Rotate(o.rotation_x, o.rotation_y, o.rotation_z);
 				
 				Bounds bounds = Utils.CaptureBounds(clone);
-				// Calculate displacement
-				Vector3 center = bounds.center;
-				clone.transform.position += new Vector3(o.position_x, o.position_y, o.position_z) - center;
-				
 				
 				// Calculate scale from size
 				Vector3 exp_size = new Vector3(o.size_x, o.size_y, o.size_z);
@@ -245,6 +241,11 @@ namespace Unity.Robotics.UrdfImporter.Editor
 				
 				Vector3 scale = Utils.CalculateScale(exp_size, ori_size);
 				clone.transform.localScale = Vector3.Scale(clone.transform.localScale, scale);
+				
+				// Calculate displacement
+				bounds = Utils.CaptureBounds(clone);
+				Vector3 center = bounds.center;
+				clone.transform.position += new Vector3(o.position_x, o.position_y, o.position_z) - center;
 				
 				
 				clone.transform.Rotate(o.rotation_x, o.rotation_y, o.rotation_z);
