@@ -28,7 +28,7 @@ class boudingbox : EditorWindow
 
     if (GUILayout.Button("Capture Bounds") ) {
       //Renderer ren = Selection.activeTransform.GetComponentInChildren<Renderer>();
-      Renderer[] renderers = GameObject.Find(Selection.activeTransform.name).GetComponentsInChildren<Renderer>();
+      Renderer[] renderers = Selection.activeTransform.GetComponentsInChildren<Renderer>();
       bounds = new Bounds();
       if (renderers.Length != 0)
       {
