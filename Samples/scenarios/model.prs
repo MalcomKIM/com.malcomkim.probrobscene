@@ -1,0 +1,60 @@
+import math
+
+width = 5
+length = 5
+height = 5
+workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length, height)
+
+class Bowl:
+	width: 0.258534
+	length: 0.258564
+	height: 0.115678
+	model_name: "Bowl"
+
+class Camera:
+	width: 0.200000
+	length: 0.400000
+	height: 0.100000
+	model_name: "Camera"
+
+class Cube:
+	width: 0.040000
+	length: 0.040000
+	height: 0.040000
+	model_name: "Cube"
+
+class Cup:
+	width: 0.090000
+	length: 0.089999
+	height: 0.123300
+	model_name: "Cup"
+
+class Cylinder:
+	width: 0.050000
+	length: 0.050000
+	height: 0.050000
+	model_name: "Cylinder"
+
+class Table:
+	width: 2.000000
+	length: 2.000000
+	height: 0.900000
+	model_name: "Table"
+
+class ToyCube:
+	width: 0.250000
+	length: 0.250000
+	height: 0.250000
+	model_name: "ToyCube"
+
+class Tray:
+	width: 0.236400
+	length: 0.452200
+	height: 0.028964
+	model_name: "Tray"
+
+class ur3_with_gripper:
+	width: 0.503205
+	length: 0.186896
+	height: 0.734252
+	model_name: "ur3_with_gripper"
