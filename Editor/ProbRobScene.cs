@@ -220,7 +220,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 				cube.name = o.model_name;
 				cube.transform.localScale = new Vector3 (o.size_x, o.size_y, o.size_z);
 				cube.transform.position = new Vector3(o.position_x, o.position_y, o.position_z);
-				cube.transform.rotation = Quaternion.Euler(new Vector3(o.rotation_x, o.rotation_y, o.rotation_z));
+				cube.transform.rotation = Quaternion.Euler(new Vector3(o.rotation_x * Mathf.Rad2Deg, o.rotation_y * Mathf.Rad2Deg, o.rotation_z * Mathf.Rad2Deg));
 				cube.GetComponent<Renderer>().material = TransparentRed;
 				cube.transform.parent = References.transform;
 			}
@@ -233,7 +233,6 @@ namespace Unity.Robotics.UrdfImporter.Editor
 				GameObject clone = Instantiate(GameObject.Find(Models.transform.name + "/" + o.model_name));
 				clone.name = o.model_name;
 				
-				// clone.transform.Rotate(o.rotation_x, o.rotation_y, o.rotation_z);
 				
 				Bounds bounds = Utils.CaptureBounds(clone);
 				
@@ -250,7 +249,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 				clone.transform.position += new Vector3(o.position_x, o.position_y, o.position_z) - center;
 				
 				
-				clone.transform.Rotate(o.rotation_x, o.rotation_y, o.rotation_z);
+				clone.transform.Rotate(o.rotation_x * Mathf.Rad2Deg, o.rotation_y * Mathf.Rad2Deg, o.rotation_z * Mathf.Rad2Deg);
 				
 				
 				clone.transform.parent = Scene.transform;
