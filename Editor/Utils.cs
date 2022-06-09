@@ -46,7 +46,7 @@ public static class Utils
 	
 	
 	// Write to items' information to Model.prs
-	public static string CreateModelPrs(List<ModelItem> items){
+	public static string CreateModelPrs(List<ModelItem> items, string save_path){
 		string model_prs = @"import math
 
 width = 5
@@ -58,8 +58,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			model_prs = model_prs + i.toString();
 		}
 		
-		string BASE_PROJECT_PATH = Directory.GetCurrentDirectory();
-		File.WriteAllText(@BASE_PROJECT_PATH + "/Assets/Scenarios/model.prs", model_prs);
+		File.WriteAllText(save_path+"\\model.prs", model_prs);
 		//yield return new WaitUntil(() => File.Exists(@"E:/ProbRobScene/scenarios/mymodel.prs"));
 		return model_prs;
 	}

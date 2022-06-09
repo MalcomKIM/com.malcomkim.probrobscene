@@ -186,7 +186,9 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			}
 			
 			// Generate Model.prs
-			Utils.CreateModelPrs(ModelItems);
+			string PrsPath = AssetDatabase.GetAssetPath(textPRS);
+			string save_path = Path.GetDirectoryName(Path.GetFullPath(PrsPath));
+			Utils.CreateModelPrs(ModelItems, save_path);
 			
 			// Start building the scene from give .prs
 			EditorCoroutineUtility.StartCoroutine(BuildScene(),this);
