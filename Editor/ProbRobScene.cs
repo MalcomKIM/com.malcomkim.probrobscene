@@ -36,6 +36,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 		
 		// INPUT: Python Path
 		string PythonPath="";
+		string defaultPlaceHolder = "";
 		
 		// INPUT: prs file
 		TextAsset textPRS;
@@ -61,6 +62,9 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			Debug.Log(ABS_PACKAGE_PATH);
 			Debug.Log(ABS_PACKAGE_EDITOR_PATH);
 			Debug.Log(REL_PACKAGE_MATERIALS_PATH);
+			
+			defaultPlaceHolder = Utils.FindPython();
+			Debug.Log(defaultPlaceHolder);
 		}
 
 		void OnGUI ()
@@ -89,7 +93,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			//=============== Scene part ===============
 			GUILayout.Space(10);
 			GUILayout.Label("Scene Specifier", titleStyle);
-			string defaultPlaceHolder = Utils.FindPython();
+			
 			PythonPath = EditorGUILayout.TextField("python path: ", (PythonPath == string.Empty && defaultPlaceHolder != null) ? defaultPlaceHolder : PythonPath);
 			
 			textPRS = EditorGUILayout.ObjectField("Input .prs file", textPRS ,typeof(TextAsset),true) as TextAsset;
