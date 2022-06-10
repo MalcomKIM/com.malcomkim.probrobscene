@@ -10,7 +10,7 @@ class boudingbox : EditorWindow
   private float height;
   private float depth;
 
-  [MenuItem("Tests/Show Render Bounds")]
+  [MenuItem("ProbRobScene/Capture Bounds")]
 
   public static void ShowWindow()
   {

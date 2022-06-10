@@ -41,7 +41,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 		TextAsset textPRS;
 		
 
-		[MenuItem("Tests/ProbRobScene")]
+		[MenuItem("ProbRobScene/ProbRobScene")]
 		public static void ShowWindow()
 		{
 			GetWindow<ProbRobScene>("ProbRobScene");
@@ -90,7 +90,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			GUILayout.Space(10);
 			GUILayout.Label("Scene Specifier", titleStyle);
 			string defaultPlaceHolder = Utils.FindPython();
-			PythonPath = EditorGUILayout.TextField("python.exe path: ", PythonPath == string.Empty ? defaultPlaceHolder : PythonPath);
+			PythonPath = EditorGUILayout.TextField("python path: ", (PythonPath == string.Empty && defaultPlaceHolder != null) ? defaultPlaceHolder : PythonPath);
 			
 			textPRS = EditorGUILayout.ObjectField("Input .prs file", textPRS ,typeof(TextAsset),true) as TextAsset;
 			

@@ -7,6 +7,7 @@ using Unity.EditorCoroutines.Editor;
 using UnityEngine;
 using UnityEditor;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
@@ -44,6 +45,15 @@ public static class Utils
 		return new Vector3(width, height, length);
 	}
 	
+	public static Vector3 CalculateScale(Vector3 exp_size, Vector3 ori_size){
+		ori_size.x = Math.Max(ori_size.x, MIN_VALUE);
+		ori_size.y = Math.Max(ori_size.y, MIN_VALUE);
+		ori_size.z = Math.Max(ori_size.z, MIN_VALUE);
+		
+		return new Vector3(exp_size.x / ori_size.x, exp_size.y / ori_size.y, exp_size.z / ori_size.z);
+		
+	}
+	
 	
 	// Write to items' information to Model.prs
 	public static string CreateModelPrs(List<ModelItem> items, string save_path){
@@ -74,21 +84,20 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 	}
 	
 	public static string FindPython(){
-		var path = Environment.GetEnvironmentVariable("PATH");
-		string pythonPath = null;
-		foreach (var p in path.Split(new char[] { ';' })) { 
-		  var fullPath = Path.Combine(p, "python.exe");
-		  if (File.Exists(fullPath)) { 
-			pythonPath = fullPath;
-			break;
-		  }
+		string PythonPath = "";
+		try{
+			PythonPath = cmd("/C python -c \"import sys; print(sys.executable)\"");
 		}
-
-		if (pythonPath == null) { 
-			throw new Exception("Couldn't find python on %PATH%");
-		} 
+		catch(Exception e){
+			Debug.Log("Exception Message: " + e.Message);
+			return null;
+		}
 		
-		return pythonPath;
+		if(File.Exists(PythonPath)){
+			return PythonPath;
+		}
+		
+		return null;
 	}
 	
 	
@@ -129,14 +138,68 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 		return json_result;
     }	
 	
-	public static Vector3 CalculateScale(Vector3 exp_size, Vector3 ori_size){
-		ori_size.x = Math.Max(ori_size.x, MIN_VALUE);
-		ori_size.y = Math.Max(ori_size.y, MIN_VALUE);
-		ori_size.z = Math.Max(ori_size.z, MIN_VALUE);
+	
+	public static string cmd(string args){
+		string OSPlatform = GetOperatingSystem();
+		string filename = "";
 		
-		return new Vector3(exp_size.x / ori_size.x, exp_size.y / ori_size.y, exp_size.z / ori_size.z);
+		if(OSPlatform == "Windows"){
+			filename = "cmd.exe";
+		}
+		else if(OSPlatform == "OSX" || OSPlatform == "Linux"){
+			filename = "/bin/bash";
+		}
+		else{
+			return null;
+		}
 		
+		Process process = new Process();
+		process = Process.Start(new ProcessStartInfo
+                            {
+                                FileName= filename,
+								Arguments = args,
+								CreateNoWindow = true,
+								UseShellExecute = false,
+								RedirectStandardOutput = true
+                            }); 
+		
+		string output = process.StandardOutput.ReadToEnd();
+		process.WaitForExit();
+		process.Close();
+		
+		
+		using (var reader = new StringReader(output))
+		{
+			output = reader.ReadLine();
+		}
+		
+		return output;
 	}
+	
+	
+	public static string GetOperatingSystem()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            return "OSX";
+        }
 
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            return "Linux";
+        }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return "Windows";
+        }
+
+        return null;
+    }
+	
+	
+
+
+	
 	
 }
