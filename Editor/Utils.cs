@@ -84,9 +84,18 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 	}
 	
 	public static string FindPython(){
+		string OSPlatform = GetOperatingSystem();
 		string PythonPath = "";
 		try{
-			PythonPath = cmd("/C python -c \"import sys; print(sys.executable)\"");
+			if(OSPlatform == "Windows"){
+				PythonPath = cmd(OSPlatform, "/C python -c \"import sys; print(sys.executable)\"");
+			}
+			else if(OSPlatform == "OSX" || OSPlatform == "Linux"){
+				PythonPath = cmd(OSPlatform, "python -c \"import sys; print(sys.executable)\"");
+			}
+			else{
+				return null;
+			}
 		}
 		catch(Exception e){
 			Debug.Log("Exception Message: " + e.Message);
@@ -139,8 +148,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
     }	
 	
 	
-	public static string cmd(string args){
-		string OSPlatform = GetOperatingSystem();
+	public static string cmd(string OSPlatform, string args){
 		string filename = "";
 		
 		if(OSPlatform == "Windows"){

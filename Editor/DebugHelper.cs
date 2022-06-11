@@ -26,7 +26,8 @@ public class DebugHelper : EditorWindow
 		if (GUILayout.Button("Execute"))
 		{
 			//"/C python -c \"import sys; print(sys.executable)\""
-			Debug.Log(Utils.cmd("/C python -c \"import sys; print(sys.executable)\""));
+			string OSPlatform = Utils.GetOperatingSystem();
+			Debug.Log(Utils.cmd(OSPlatform, "/C python -c \"import sys; print(sys.executable)\""));
 		}
 		
     }
