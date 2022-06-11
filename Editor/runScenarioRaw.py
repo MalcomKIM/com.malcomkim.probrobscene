@@ -1,5 +1,12 @@
 import sys,os
-sys.path.append(os.path.dirname(__file__)+'/../ProbRobSceneEnvironment~')
+import platform
+
+if platform.system() == 'Windows':
+    sys.path.append(os.path.dirname(__file__)+'/../ProbRobSceneEnvironment~')
+else:
+    sys.path.append(os.path.dirname(__file__)+'/../ProbRobSceneEnvironment-Linux~')
+
+
 import probRobScene
 
 
