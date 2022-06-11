@@ -20,7 +20,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 		string ABS_PACKAGE_EDITOR_PATH;
 		
 		// Relative package paths
-		string REL_PACKAGE_PATH="Packages\\com.malcomkim.probrobscene";
+		string REL_PACKAGE_PATH="Packages/com.malcomkim.probrobscene";
 		string REL_PACKAGE_MATERIALS_PATH;
 		
 		// INPUT: Prefabs
@@ -57,8 +57,8 @@ namespace Unity.Robotics.UrdfImporter.Editor
 		public void OnEnable()
 		{
 			ABS_PACKAGE_PATH = getPackageAbsPath();
-			ABS_PACKAGE_EDITOR_PATH = ABS_PACKAGE_PATH + "\\Editor";
-			REL_PACKAGE_MATERIALS_PATH= REL_PACKAGE_PATH + "\\Materials";
+			ABS_PACKAGE_EDITOR_PATH = ABS_PACKAGE_PATH + "/Editor";
+			REL_PACKAGE_MATERIALS_PATH= REL_PACKAGE_PATH + "/Materials";
 			Debug.Log(ABS_PACKAGE_PATH);
 			Debug.Log(ABS_PACKAGE_EDITOR_PATH);
 			Debug.Log(REL_PACKAGE_MATERIALS_PATH);
@@ -116,7 +116,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 					foreach(FileInfo file in Files)
 					{
 						string _prefab = System.IO.Path.GetFileNameWithoutExtension(file.Name);
-						string prefab = prefabs_folder_path + "\\"+ _prefab + ".prefab";
+						string prefab = prefabs_folder_path + "/"+ _prefab + ".prefab";
 						Debug.Log(prefab);
 						GameObject go = Instantiate(AssetDatabase.LoadAssetAtPath(prefab,typeof(GameObject))) as GameObject;
 						
@@ -216,7 +216,7 @@ namespace Unity.Robotics.UrdfImporter.Editor
 			
 			// Transparent Red boxes
 			GameObject References = new GameObject("References"); 
-			Material TransparentRed = (Material)AssetDatabase.LoadAssetAtPath(REL_PACKAGE_MATERIALS_PATH + "\\TransparentRed.mat", typeof(Material));
+			Material TransparentRed = (Material)AssetDatabase.LoadAssetAtPath(REL_PACKAGE_MATERIALS_PATH + "/TransparentRed.mat", typeof(Material));
 	 
 			foreach (SceneItem o in SceneItems.objects)
 			{	

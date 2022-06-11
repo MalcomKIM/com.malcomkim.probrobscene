@@ -68,7 +68,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			model_prs = model_prs + i.toString();
 		}
 		
-		File.WriteAllText(save_path+"\\model.prs", model_prs);
+		File.WriteAllText(save_path+"/model.prs", model_prs);
 		//yield return new WaitUntil(() => File.Exists(@"E:/ProbRobScene/scenarios/mymodel.prs"));
 		return model_prs;
 	}
