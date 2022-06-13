@@ -34,8 +34,15 @@ public class ProbRobScene : EditorWindow
 	Object UrdfObject;	// urdf input placeholder
 	string RobotName;	// robot name with extension
 	string _RobotName;	// robot name without extension
-	ImportSettings settings = new ImportSettings();
-	float progress = 0.0f; // Robot Loading Progress, used for delay
+	
+	bool advancedSetting = false;
+	string k_BaseLinkName = "base_link";
+	float k_ControllerAcceleration = 10;
+    float k_ControllerDamping = 100;
+    float k_ControllerForceLimit = 1000;
+    float k_ControllerSpeed = 30;
+    float k_ControllerStiffness = 10000;
+	
 	
 	// INPUT: Python Path
 	string PythonPath="";
@@ -43,6 +50,8 @@ public class ProbRobScene : EditorWindow
 	
 	// INPUT: prs file
 	TextAsset textPRS;
+	
+	bool debugMode = false;
 	
 
 	[MenuItem("ProbRobScene/ProbRobScene")]
@@ -92,6 +101,16 @@ public class ProbRobScene : EditorWindow
 		GUILayout.Space(10);
 		GUILayout.Label("Robot", titleStyle);
 		UrdfObject = EditorGUILayout.ObjectField("Input .urdf file", UrdfObject ,typeof(Object),true);
+		advancedSetting = EditorGUILayout.Toggle("Advanced Settings", advancedSetting);
+		
+		if(advancedSetting){
+			k_ControllerStiffness = EditorGUILayout.FloatField("Stiffness", k_ControllerStiffness);
+			k_ControllerDamping = EditorGUILayout.FloatField("Damping", k_ControllerDamping);
+			k_ControllerForceLimit = EditorGUILayout.FloatField("Force Limit", k_ControllerDamping);
+			k_ControllerSpeed = EditorGUILayout.FloatField("Speed", k_ControllerSpeed);;
+			k_ControllerAcceleration = EditorGUILayout.FloatField("Acceleration", k_ControllerAcceleration);
+		}
+		
 		
 		//=============== Scene part ===============
 		GUILayout.Space(10);
@@ -101,18 +120,33 @@ public class ProbRobScene : EditorWindow
 		
 		textPRS = EditorGUILayout.ObjectField("Input .prs file", textPRS ,typeof(TextAsset),true) as TextAsset;
 		
+		GUILayout.Space(10);
 		
-		GUILayout.Space(20);
+		debugMode = EditorGUILayout.Toggle("Debug Mode", debugMode);
+		
+		GUILayout.Space(10);
 		if (GUILayout.Button("Generate Scene"))
-		{
-			Models = new GameObject("Models");
+		{	
+			
+			if (!Directory.Exists(prefabs_folder_path)){
+				Debug.LogError("Prefab path not found or missing");
+				return;
+			}
+			
+			if(!File.Exists(PythonPath)){
+				Debug.LogError("Python path not found or missing");
+				return;
+			}
+			
+			if(textPRS == null){
+				Debug.LogError(".prs file not found or missing");
+				return;
+			}
+			
 			
 			//=============== Load prefabs ===============
 			if (prefabs_folder_path != ""){
-				//string BASE_PROJECT_PATH = Directory.GetCurrentDirectory();
-				//Debug.Log(BASE_PROJECT_PATH);
-				//string PREFABS_FOLDER_PATH =  prefabs_folder_path;
-				Debug.Log(prefabs_folder_path);
+				Models = new GameObject("Models");
 				DirectoryInfo d = new DirectoryInfo(@prefabs_folder_path);
 				FileInfo[] Files = d.GetFiles("*.prefab");
 				
@@ -138,13 +172,13 @@ public class ProbRobScene : EditorWindow
 						go.transform.parent = wrapper.transform;
 						wrapper.transform.parent = Models.transform;
 					}
-					
 				}
 			}
 			
 			//=============== Load Robot ===============
 			
 			if (UrdfObject != null) {
+				ImportSettings settings = new ImportSettings();
 				RobotName = AssetDatabase.GetAssetPath(UrdfObject);
 				
 				_RobotName = System.IO.Path.GetFileNameWithoutExtension(RobotName);
@@ -152,27 +186,34 @@ public class ProbRobScene : EditorWindow
 				if (RobotName != ""){
 					var robotImporter = UrdfRobotExtensions.Create(RobotName, settings);
 					while (robotImporter.MoveNext()) { }
+					
+					// Add robot into the scene as a child node
+					GameObject robot = GameObject.Find(_RobotName);
+					robot.transform.parent = Models.transform;
+					
+					var controller = robot.GetComponent<Controller>();
+					controller.stiffness = k_ControllerStiffness;
+					controller.damping = k_ControllerDamping;
+					controller.forceLimit = k_ControllerForceLimit;
+					controller.speed = k_ControllerSpeed;
+					controller.acceleration = k_ControllerAcceleration;
+					GameObject.Find(k_BaseLinkName).GetComponent<ArticulationBody>().immovable = true;
 				}
 			}
 			
 			//=============== Generate Model.prs ===============
-			EditorCoroutineUtility.StartCoroutine(BuildModels(),this);
+			BuildModels();
 			
+			//=============== Setup the Scene ===============
+			BuildScene();
 		}
 		
 		
 	}
 
-	IEnumerator BuildModels()
+	void BuildModels()
 	{
 		List<ModelItem> ModelItems = new List<ModelItem>();
-		
-		// Add robot into the scene as a child node
-		GameObject robot = GameObject.Find(_RobotName);
-		robot.transform.parent = Models.transform;
-		
-		// reset progress
-		progress = 0.0f;
 		
 		// Get boundaries
 		foreach (Transform child in Models.transform)
@@ -192,13 +233,10 @@ public class ProbRobScene : EditorWindow
 		string save_path = Path.GetDirectoryName(Path.GetFullPath(PrsPath));
 		Utils.CreateModelPrs(ModelItems, save_path);
 		
-		// Start building the scene from give .prs
-		EditorCoroutineUtility.StartCoroutine(BuildScene(),this);
-		yield return new WaitForSeconds(0.1f);
 	}
 	
 	
-	IEnumerator BuildScene(){
+	void BuildScene(){
 		
 		string PrsPath = AssetDatabase.GetAssetPath(textPRS);
 		string PrsName = System.IO.Path.GetFileNameWithoutExtension(PrsPath);	
@@ -214,19 +252,22 @@ public class ProbRobScene : EditorWindow
 		SceneItemList SceneItems = JsonUtility.FromJson<SceneItemList>(json_result);
 		
 		// Transparent Red boxes
-		GameObject References = new GameObject("References"); 
-		Material TransparentRed = (Material)AssetDatabase.LoadAssetAtPath(REL_PACKAGE_MATERIALS_PATH + "/TransparentRed.mat", typeof(Material));
- 
-		foreach (SceneItem o in SceneItems.objects)
-		{	
-			GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-			cube.name = o.model_name;
-			cube.transform.localScale = new Vector3 (o.size_x, o.size_y, o.size_z);
-			cube.transform.position = new Vector3(o.position_x, o.position_y, o.position_z);
-			cube.transform.rotation = Quaternion.Euler(new Vector3(o.rotation_x * Mathf.Rad2Deg, o.rotation_y * Mathf.Rad2Deg, o.rotation_z * Mathf.Rad2Deg));
-			cube.GetComponent<Renderer>().material = TransparentRed;
-			cube.transform.parent = References.transform;
+		if(debugMode){
+			GameObject References = new GameObject("References"); 
+			Material TransparentRed = (Material)AssetDatabase.LoadAssetAtPath(REL_PACKAGE_MATERIALS_PATH + "/TransparentRed.mat", typeof(Material));
+	 
+			foreach (SceneItem o in SceneItems.objects)
+			{	
+				GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+				cube.name = o.model_name;
+				cube.transform.localScale = new Vector3 (o.size_x, o.size_y, o.size_z);
+				cube.transform.position = new Vector3(o.position_x, o.position_y, o.position_z);
+				cube.transform.rotation = Quaternion.Euler(new Vector3(o.rotation_x * Mathf.Rad2Deg, o.rotation_y * Mathf.Rad2Deg, o.rotation_z * Mathf.Rad2Deg));
+				cube.GetComponent<Renderer>().material = TransparentRed;
+				cube.transform.parent = References.transform;
+			}
 		}
+		
 		
 		// Build the scene
 		GameObject Scene = new GameObject(PrsName);
@@ -260,9 +301,6 @@ public class ProbRobScene : EditorWindow
 		
 		// Deactivate the Gameobject which contains all models
 		Models.SetActive(false);
-		//References.SetActive(false);
-		
-		yield return new WaitForSeconds(0.1f);
 	}
 	
 	string getPackageAbsPath(){
