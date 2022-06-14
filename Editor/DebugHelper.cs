@@ -9,31 +9,33 @@ using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
-public class DebugHelper : EditorWindow
-{
-    [MenuItem("ProbRobScene/Debug Helper")]
-    static void Init()
-    {
-        EditorWindow window = GetWindow(typeof(DebugHelper));
-        window.Show();
-    }
-	
-	
-	void OnGUI()
-    {
-		
-		
-		if (GUILayout.Button("Execute"))
+namespace MalcomKim.ProbRobScene.Editor{
+	public class DebugHelper : EditorWindow
+	{
+		[MenuItem("ProbRobScene/Debug Helper")]
+		static void Init()
 		{
-			//"/C python -c \"import sys; print(sys.executable)\""
-			string OSPlatform = Utils.GetOperatingSystem();
-			Debug.Log(Utils.cmd(OSPlatform, "/C python -c \"import sys; print(sys.executable)\""));
+			EditorWindow window = GetWindow(typeof(DebugHelper));
+			window.Show();
 		}
 		
-    }
-	
-	private void OnInspectorUpdate()
-	{
-		Repaint(); 
+		
+		void OnGUI()
+		{
+			
+			
+			if (GUILayout.Button("Execute"))
+			{
+				//"/C python -c \"import sys; print(sys.executable)\""
+				string OSPlatform = Utils.GetOperatingSystem();
+				Debug.Log(Utils.cmd(OSPlatform, "/C python -c \"import sys; print(sys.executable)\""));
+			}
+			
+		}
+		
+		private void OnInspectorUpdate()
+		{
+			Repaint(); 
+		}
 	}
 }
