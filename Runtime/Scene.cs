@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MalcomKim.ProbRobScene.Editor{
+namespace MalcomKim.ProbRobScene{
 	[System.Serializable]
 	public class SceneItem
 	{

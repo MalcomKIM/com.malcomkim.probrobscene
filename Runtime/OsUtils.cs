@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.EditorCoroutines.Editor;
 using UnityEngine;
 using UnityEditor;
 using System.Diagnostics;
@@ -11,8 +10,8 @@ using System.Runtime.InteropServices;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
-namespace MalcomKim.ProbRobScene.Editor{
-	public static class Utils
+namespace MalcomKim.ProbRobScene{
+	public static class OsUtils
 	{
 		private static float MIN_VALUE = 0.000001f;
 		

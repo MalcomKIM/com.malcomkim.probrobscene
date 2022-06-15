@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MalcomKim.ProbRobScene.Editor{
+namespace MalcomKim.ProbRobScene{
 	public class ModelItem
 	{
 		private float MIN_VALUE = 0.000001f;

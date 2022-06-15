@@ -1,14 +1,10 @@
 {
-    "name": "MalcomKim.ProbRobScene.Editor",
+    "name": "MalcomKim.ProbRobScene",
     "rootNamespace": "",
     "references": [
-        "Unity.Robotics.UrdfImporter",
-        "Unity.Robotics.UrdfImporter.Editor",
-        "MalcomKim.ProbRobScene"
+        "GUID:b1ef917f7a8a86a4eb639ec2352edbf8"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
