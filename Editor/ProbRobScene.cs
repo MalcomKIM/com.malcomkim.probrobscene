@@ -37,7 +37,6 @@ namespace MalcomKim.ProbRobScene.Editor{
 		string _RobotName;	// robot name without extension
 		
 		bool advancedSetting = false;
-		string k_BaseLinkName = "base_link";
 		float k_ControllerAcceleration = 10;
 		float k_ControllerDamping = 100;
 		float k_ControllerForceLimit = 1000;
@@ -183,8 +182,7 @@ namespace MalcomKim.ProbRobScene.Editor{
 				}
 				
 				
-				// Fix robot position
-				GameObject.Find(k_BaseLinkName).GetComponent<ArticulationBody>().immovable = true;				
+							
 				// Deactivate the Gameobject which contains all models
 				Models.SetActive(false);
 				
@@ -219,9 +217,7 @@ namespace MalcomKim.ProbRobScene.Editor{
 											PythonPath,
 											"RealScene");
 				}
-				
-				// Fix robot position
-				GameObject.Find(k_BaseLinkName).GetComponent<ArticulationBody>().immovable = true;				
+								
 				// Deactivate the Gameobject which contains all models
 				Models.SetActive(false);
 			}

@@ -117,6 +117,11 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 				
 				clone.transform.Rotate(o.rotation_x * Mathf.Rad2Deg, o.rotation_y * Mathf.Rad2Deg, o.rotation_z * Mathf.Rad2Deg);
 				
+				// Fix robot position
+				if(clone.tag == "robot"){
+					clone.transform.Find("world/base_link").GetComponent<ArticulationBody>().immovable = true;	
+				}
+				
 				clone.transform.parent = RealScene.transform;
 			}
 			return RealScene;
