@@ -58,8 +58,7 @@ namespace MalcomKim.ProbRobScene{
 									float k_ControllerDamping,
 									float k_ControllerForceLimit, 
 									float k_ControllerSpeed,
-									float k_ControllerAcceleration,
-									string k_BaseLinkName){
+									float k_ControllerAcceleration){
 			GameObject Models = GameObject.Find(MODELS_PARENT);
 			
 			if (UrdfObject != null) {
@@ -82,7 +81,7 @@ namespace MalcomKim.ProbRobScene{
 					controller.forceLimit = k_ControllerForceLimit;
 					controller.speed = k_ControllerSpeed;
 					controller.acceleration = k_ControllerAcceleration;
-					GameObject.Find(k_BaseLinkName).GetComponent<ArticulationBody>().immovable = true;
+					// GameObject.Find(k_BaseLinkName).GetComponent<ArticulationBody>().immovable = true;
 				}
 			}
 			

@@ -83,6 +83,34 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			}
 		}
 		
+		public static GameObject FindInActiveObjectByName(string name)
+		{
+			Transform[] objs = Resources.FindObjectsOfTypeAll<Transform>() as Transform[];
+			for (int i = 0; i < objs.Length; i++)
+			{
+				if (objs[i].hideFlags == HideFlags.None)
+				{
+					if (objs[i].name == name)
+					{
+						return objs[i].gameObject;
+					}
+				}
+			}
+			return null;
+		}
+		
+		 public static T SafeDestroyGameObject<T>(T obj) where T : Object
+		{
+		 if (Application.isEditor)
+			 Object.DestroyImmediate(obj);
+		 else
+			 Object.Destroy(obj);
+		 
+		 return null;
+		}
+		
+ 
+		
 		public static string FindPython(){
 			string OSPlatform = GetOperatingSystem();
 			string PythonPath = "";
@@ -205,6 +233,17 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			return null;
 		}
 		
+		public static string getPackageAbsPath(){
+			return Path.GetFullPath("Packages/com.malcomkim.probrobscene");
+		}
+		
+		public static string getPackageRuntimeAbsPath(){
+			return getPackageAbsPath() + "/Runtime";
+		}
+
+		public static string getPackageEditorAbsPath(){
+			return getPackageAbsPath() + "/Editor";
+		}
 		
 
 

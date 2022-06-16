@@ -71,7 +71,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 		}
 		
 		
-		public static void BuildDebugScene(string MaterialPath, SceneItemList SceneItems, string SceneName){
+		public static GameObject BuildDebugScene(string MaterialPath, SceneItemList SceneItems, string SceneName){
 			GameObject DebugScene = new GameObject(SceneName); 
 			Material TransparentRed = (Material)AssetDatabase.LoadAssetAtPath(MaterialPath + "/TransparentRed.mat", typeof(Material));
 	 
@@ -85,9 +85,11 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 				cube.GetComponent<Renderer>().material = TransparentRed;
 				cube.transform.parent = DebugScene.transform;
 			}
+			
+			return DebugScene;
 		}
 		
-		public static void BuildRealScene(SceneItemList SceneItems, string SceneName){
+		public static GameObject BuildRealScene(SceneItemList SceneItems, string SceneName){
 			GameObject Models = GameObject.Find(MODELS_PARENT);
 			GameObject RealScene = new GameObject(SceneName);
 			
@@ -117,33 +119,45 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 				
 				clone.transform.parent = RealScene.transform;
 			}
-			
+			return RealScene;
 		}
 		
 		
-		public static void BuildScene(TextAsset textPRS,
+		public static GameObject BuildScene(TextAsset textPRS,
 									string RuntimePath,
-									string MaterialPath,
 									string PythonPath,
-									bool debugMode){
-			GameObject Models = GameObject.Find(MODELS_PARENT);
+									string RealSceneName,
+									string MaterialPath,
+									string DebugSceneName){
 			
 			string PrsPath = AssetDatabase.GetAssetPath(textPRS);
 			string PrsName = System.IO.Path.GetFileNameWithoutExtension(PrsPath);	
 
 			SceneItemList SceneItems = SceneBuilder.getSceneItemList(PrsPath, PrsName, PythonPath, RuntimePath);
-			// Transparent Red boxes
-			if(debugMode){
-				BuildDebugScene(MaterialPath, SceneItems, "DebugScene");
-				//SceneBuilder.BuildDebugScene("Assets/Samples/Prefabs/Materials", SceneItems);
-			}
-			BuildRealScene(SceneItems,"RealScene");
+
+			BuildDebugScene(MaterialPath, SceneItems, DebugSceneName);
 			
-			// Deactivate the Gameobject which contains all models
-			Models.SetActive(false);
+			GameObject RealScene = BuildRealScene(SceneItems,RealSceneName);
+			
+			return RealScene;
 		}
 		
 		
+		
+		public static GameObject BuildScene(TextAsset textPRS,
+									string RuntimePath,
+									string PythonPath,
+									string RealSceneName){
+			
+			string PrsPath = AssetDatabase.GetAssetPath(textPRS);
+			string PrsName = System.IO.Path.GetFileNameWithoutExtension(PrsPath);	
+
+			SceneItemList SceneItems = SceneBuilder.getSceneItemList(PrsPath, PrsName, PythonPath, RuntimePath);
+			
+			GameObject RealScene = BuildRealScene(SceneItems,RealSceneName);
+			
+			return RealScene;
+		}
 		
 		
 		

@@ -32,7 +32,6 @@ namespace MalcomKim.ProbRobScene.Editor{
 		string k_PrefabSuffix = ".prefab";
 		
 		// INPUT: Robot
-		GameObject Models;	// hold all the models in the world
 		Object UrdfObject;	// urdf input placeholder
 		string RobotName;	// robot name with extension
 		string _RobotName;	// robot name without extension
@@ -53,6 +52,8 @@ namespace MalcomKim.ProbRobScene.Editor{
 		// INPUT: prs file
 		TextAsset textPRS;
 		
+		GameObject Models;	// hold all the models in the world
+		GameObject RealScene;
 		bool debugMode = false;
 		
 
@@ -70,8 +71,12 @@ namespace MalcomKim.ProbRobScene.Editor{
 		
 		public void OnEnable()
 		{
-			ABS_PACKAGE_PATH = getPackageAbsPath();
-			ABS_PACKAGE_RUNTIME_PATH = ABS_PACKAGE_PATH + "/Runtime";
+			// ABS_PACKAGE_PATH = getPackageAbsPath();
+			ABS_PACKAGE_RUNTIME_PATH = OsUtils.getPackageRuntimeAbsPath();
+			if(! Directory.Exists(ABS_PACKAGE_RUNTIME_PATH)){
+				ABS_PACKAGE_RUNTIME_PATH = getPackageAbsPath()+ "/Runtime";
+			}
+			
 			REL_PACKAGE_MATERIALS_PATH= REL_PACKAGE_PATH + "/Materials";
 			Debug.Log(ABS_PACKAGE_PATH);
 			Debug.Log(ABS_PACKAGE_RUNTIME_PATH);
@@ -127,7 +132,7 @@ namespace MalcomKim.ProbRobScene.Editor{
 			debugMode = EditorGUILayout.Toggle("Debug Mode", debugMode);
 			
 			GUILayout.Space(10);
-			if (GUILayout.Button("Generate Scene"))
+			if (GUILayout.Button("Build Scene"))
 			{	
 				
 				if (!Directory.Exists(k_PrefabDirectory)){
@@ -156,23 +161,71 @@ namespace MalcomKim.ProbRobScene.Editor{
 											k_ControllerDamping,
 											k_ControllerForceLimit, 
 											k_ControllerSpeed,
-											k_ControllerAcceleration,
-											k_BaseLinkName);
+											k_ControllerAcceleration);
 				
 				//=============== Generate Model.prs ===============
 				SceneBuilder.BuildModels(textPRS);
 				
 				//=============== Setup the Scene ===============
-				SceneBuilder.BuildScene(textPRS,
-										ABS_PACKAGE_RUNTIME_PATH,
-										REL_PACKAGE_MATERIALS_PATH,
-										PythonPath,
-										debugMode);
+				if(debugMode){
+					RealScene = SceneBuilder.BuildScene(textPRS,
+											ABS_PACKAGE_RUNTIME_PATH,
+											PythonPath,
+											"RealScene",
+											REL_PACKAGE_MATERIALS_PATH,
+											"DebugScene");
+				}
+				else{
+					RealScene = SceneBuilder.BuildScene(textPRS,
+											ABS_PACKAGE_RUNTIME_PATH,
+											PythonPath,
+											"RealScene");
+				}
+				
+				
+				// Fix robot position
+				GameObject.Find(k_BaseLinkName).GetComponent<ArticulationBody>().immovable = true;				
+				// Deactivate the Gameobject which contains all models
+				Models.SetActive(false);
+				
 			}
 			
 			
+			if (GUILayout.Button("Rebuild Scene")){
+				
+				
+				if(OsUtils.FindInActiveObjectByName("Models") != null){
+					Models.SetActive(true);
+				}
+				else{
+					Debug.LogError("Cannot find 'Models' GameObject");
+					return;
+				}
+				
+				//DestroyImmediate(RealScene);
+				OsUtils.SafeDestroyGameObject(RealScene);
+				
+				if(debugMode){
+					RealScene = SceneBuilder.BuildScene(textPRS,
+											ABS_PACKAGE_RUNTIME_PATH,
+											PythonPath,
+											"RealScene",
+											REL_PACKAGE_MATERIALS_PATH,
+											"DebugScene");
+				}
+				else{
+					RealScene = SceneBuilder.BuildScene(textPRS,
+											ABS_PACKAGE_RUNTIME_PATH,
+											PythonPath,
+											"RealScene");
+				}
+				
+				// Fix robot position
+				GameObject.Find(k_BaseLinkName).GetComponent<ArticulationBody>().immovable = true;				
+				// Deactivate the Gameobject which contains all models
+				Models.SetActive(false);
+			}
 		}
-		
 		
 		
 		
