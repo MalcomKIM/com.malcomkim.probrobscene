@@ -6,6 +6,8 @@ using System.Diagnostics;
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
+using Unity.Robotics.UrdfImporter;
+using Unity.Robotics.UrdfImporter.Control;
 
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
@@ -89,7 +91,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			return DebugScene;
 		}
 		
-		public static GameObject BuildRealScene(SceneItemList SceneItems, string SceneName){
+		public static GameObject BuildRealScene(SceneItemList SceneItems, string SceneName, RobotSetting rs){
 			GameObject Models = GameObject.Find(MODELS_PARENT);
 			GameObject RealScene = new GameObject(SceneName);
 			
@@ -119,7 +121,15 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 				
 				// Fix robot position
 				if(clone.tag == "robot"){
-					clone.transform.Find("world/base_link").GetComponent<ArticulationBody>().immovable = true;	
+					var controller = clone.GetComponent<Controller>();
+					controller.stiffness = rs.k_ControllerStiffness;
+					controller.damping = rs.k_ControllerDamping;
+					controller.forceLimit = rs.k_ControllerForceLimit;
+					controller.speed = rs.k_ControllerSpeed;
+					controller.acceleration = rs.k_ControllerAcceleration;
+					if(rs.immovable){
+						clone.transform.Find("world/base_link").GetComponent<ArticulationBody>().immovable = true;
+					}						
 				}
 				
 				clone.transform.parent = RealScene.transform;
@@ -133,7 +143,8 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 									string PythonPath,
 									string RealSceneName,
 									string MaterialPath,
-									string DebugSceneName){
+									string DebugSceneName,
+									RobotSetting rs){
 			
 			string PrsPath = AssetDatabase.GetAssetPath(textPRS);
 			string PrsName = System.IO.Path.GetFileNameWithoutExtension(PrsPath);	
@@ -142,7 +153,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 
 			BuildDebugScene(MaterialPath, SceneItems, DebugSceneName);
 			
-			GameObject RealScene = BuildRealScene(SceneItems,RealSceneName);
+			GameObject RealScene = BuildRealScene(SceneItems,RealSceneName,rs);
 			
 			return RealScene;
 		}
@@ -152,14 +163,15 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 		public static GameObject BuildScene(TextAsset textPRS,
 									string RuntimePath,
 									string PythonPath,
-									string RealSceneName){
+									string RealSceneName,
+									RobotSetting rs){
 			
 			string PrsPath = AssetDatabase.GetAssetPath(textPRS);
 			string PrsName = System.IO.Path.GetFileNameWithoutExtension(PrsPath);	
 
 			SceneItemList SceneItems = SceneBuilder.getSceneItemList(PrsPath, PrsName, PythonPath, RuntimePath);
 			
-			GameObject RealScene = BuildRealScene(SceneItems,RealSceneName);
+			GameObject RealScene = BuildRealScene(SceneItems,RealSceneName,rs);
 			
 			return RealScene;
 		}

@@ -17,7 +17,7 @@ using Object = UnityEngine.Object;
 
 
 namespace MalcomKim.ProbRobScene.Editor{
-	public class ProbRobScene : EditorWindow
+	public class ProbRobSceneEditor : EditorWindow
 	{
 		// Absolute package paths
 		string ABS_PACKAGE_PATH;
@@ -42,6 +42,8 @@ namespace MalcomKim.ProbRobScene.Editor{
 		float k_ControllerForceLimit = 1000;
 		float k_ControllerSpeed = 30;
 		float k_ControllerStiffness = 10000;
+		bool immovable = true;
+		string k_BaseLinkName = "world/base_link";
 		
 		
 		// INPUT: Python Path
@@ -59,7 +61,7 @@ namespace MalcomKim.ProbRobScene.Editor{
 		[MenuItem("ProbRobScene/ProbRobScene")]
 		public static void ShowWindow()
 		{
-			GetWindow<ProbRobScene>("ProbRobScene");
+			GetWindow<ProbRobSceneEditor>("ProbRobScene");
 		}
 		
 	 
@@ -115,6 +117,10 @@ namespace MalcomKim.ProbRobScene.Editor{
 				k_ControllerForceLimit = EditorGUILayout.FloatField("Force Limit", k_ControllerDamping);
 				k_ControllerSpeed = EditorGUILayout.FloatField("Speed", k_ControllerSpeed);;
 				k_ControllerAcceleration = EditorGUILayout.FloatField("Acceleration", k_ControllerAcceleration);
+				immovable = EditorGUILayout.Toggle("Immovable", immovable);
+				if(immovable){
+					k_BaseLinkName = EditorGUILayout.TextField("Base Link Name", k_BaseLinkName);;
+				}
 			}
 			
 			
@@ -155,30 +161,37 @@ namespace MalcomKim.ProbRobScene.Editor{
 				ModelItemImporter.ImportPrefabs(k_PrefabDirectory,k_PrefabSuffix);
 				
 				//=============== Load Robot ===============
-				ModelItemImporter.ImportRobot(UrdfObject,
-											k_ControllerStiffness, 
-											k_ControllerDamping,
-											k_ControllerForceLimit, 
-											k_ControllerSpeed,
-											k_ControllerAcceleration);
+				RobotSetting rs = new RobotSetting(k_ControllerAcceleration,
+												k_ControllerDamping,
+												k_ControllerForceLimit,
+												k_ControllerSpeed,
+												k_ControllerStiffness,
+												immovable,
+												k_BaseLinkName);
+												
+				ModelItemImporter.ImportRobot(UrdfObject);
 				
 				//=============== Generate Model.prs ===============
 				SceneBuilder.BuildModels(textPRS);
 				
 				//=============== Setup the Scene ===============
 				if(debugMode){
-					RealScene = SceneBuilder.BuildScene(textPRS,
+					RealScene = SceneBuilder.BuildScene(
+											textPRS,
 											ABS_PACKAGE_RUNTIME_PATH,
 											PythonPath,
 											"RealScene",
 											REL_PACKAGE_MATERIALS_PATH,
-											"DebugScene");
+											"DebugScene",
+											rs);
 				}
 				else{
-					RealScene = SceneBuilder.BuildScene(textPRS,
+					RealScene = SceneBuilder.BuildScene(
+											textPRS,
 											ABS_PACKAGE_RUNTIME_PATH,
 											PythonPath,
-											"RealScene");
+											"RealScene",
+											rs);
 				}
 				
 				
@@ -188,39 +201,6 @@ namespace MalcomKim.ProbRobScene.Editor{
 				
 			}
 			
-			
-			if (GUILayout.Button("Rebuild Scene")){
-				
-				
-				if(OsUtils.FindInActiveObjectByName("Models") != null){
-					Models.SetActive(true);
-				}
-				else{
-					Debug.LogError("Cannot find 'Models' GameObject");
-					return;
-				}
-				
-				//DestroyImmediate(RealScene);
-				OsUtils.SafeDestroyGameObject(RealScene);
-				
-				if(debugMode){
-					RealScene = SceneBuilder.BuildScene(textPRS,
-											ABS_PACKAGE_RUNTIME_PATH,
-											PythonPath,
-											"RealScene",
-											REL_PACKAGE_MATERIALS_PATH,
-											"DebugScene");
-				}
-				else{
-					RealScene = SceneBuilder.BuildScene(textPRS,
-											ABS_PACKAGE_RUNTIME_PATH,
-											PythonPath,
-											"RealScene");
-				}
-								
-				// Deactivate the Gameobject which contains all models
-				Models.SetActive(false);
-			}
 		}
 		
 		

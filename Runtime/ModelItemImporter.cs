@@ -53,12 +53,7 @@ namespace MalcomKim.ProbRobScene{
 			}
 		}
 		
-		public static GameObject ImportRobot(Object UrdfObject, 
-									float k_ControllerStiffness = 10000, 
-									float k_ControllerDamping = 100,
-									float k_ControllerForceLimit = 1000, 
-									float k_ControllerSpeed = 30,
-									float k_ControllerAcceleration = 10){
+		public static GameObject ImportRobot(Object UrdfObject){
 			GameObject Models = GameObject.Find(MODELS_PARENT);
 			GameObject robot = null;
 			
@@ -77,13 +72,6 @@ namespace MalcomKim.ProbRobScene{
 					robot.tag = "robot";
 					robot.transform.parent = Models.transform;
 					
-					var controller = robot.GetComponent<Controller>();
-					controller.stiffness = k_ControllerStiffness;
-					controller.damping = k_ControllerDamping;
-					controller.forceLimit = k_ControllerForceLimit;
-					controller.speed = k_ControllerSpeed;
-					controller.acceleration = k_ControllerAcceleration;
-					// GameObject.Find(k_BaseLinkName).GetComponent<ArticulationBody>().immovable = true;
 				}
 			}
 			return robot;
