@@ -177,6 +177,49 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 		}
 		
 		
+		public static GameObject UpdateRealScene(SceneItemList SceneItems, string SceneName, RobotSetting rs){
+			GameObject RealScene = GameObject.Find(SceneName);
+			
+			foreach (SceneItem o in SceneItems.objects)
+			{	
+				// Clone from models
+				GameObject clone = GameObject.Find(RealScene.transform.name + "/" + o.model_name);	
+
+				if(clone.tag != "robot"){
+					// Calculate displacement
+					Bounds bounds = SizeHelper.CaptureBounds(clone);
+					Vector3 center = bounds.center;
+					clone.transform.position += new Vector3(o.position_x, o.position_y, o.position_z) - center;
+					
+					// Reset rotation
+					clone.transform.rotation = Quaternion.identity;
+					// Update rotation
+					clone.transform.Rotate(o.rotation_x * Mathf.Rad2Deg, o.rotation_y * Mathf.Rad2Deg, o.rotation_z * Mathf.Rad2Deg);
+				}
+				
+				
+			}
+			return RealScene;
+		}
 		
+		public static GameObject UpdateScene(TextAsset textPRS,
+									string RuntimePath,
+									string PythonPath,
+									string RealSceneName,
+									RobotSetting rs){
+			
+			string PrsPath = AssetDatabase.GetAssetPath(textPRS);
+			string PrsName = System.IO.Path.GetFileNameWithoutExtension(PrsPath);	
+
+			SceneItemList SceneItems = SceneBuilder.getSceneItemList(PrsPath, PrsName, PythonPath, RuntimePath);
+			
+			GameObject RealScene = UpdateRealScene(SceneItems,RealSceneName,rs);
+			
+			return RealScene;
+		}
 	}
+		
+		
+		
+	
 }

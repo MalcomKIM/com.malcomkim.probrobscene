@@ -161,11 +161,11 @@ namespace MalcomKim.ProbRobScene.Editor{
 				ModelItemImporter.ImportPrefabs(k_PrefabDirectory,k_PrefabSuffix);
 				
 				//=============== Load Robot ===============
-				RobotSetting rs = new RobotSetting(k_ControllerAcceleration,
+				RobotSetting rs = new RobotSetting(k_ControllerStiffness,
 												k_ControllerDamping,
 												k_ControllerForceLimit,
 												k_ControllerSpeed,
-												k_ControllerStiffness,
+												k_ControllerAcceleration,
 												immovable,
 												k_BaseLinkName);
 												

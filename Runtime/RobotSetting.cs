@@ -5,19 +5,20 @@ using UnityEngine;
 namespace MalcomKim.ProbRobScene{
 	public class RobotSetting
 	{
-		public float k_ControllerAcceleration;
+		public float k_ControllerStiffness;
 		public float k_ControllerDamping;
 		public float k_ControllerForceLimit;
 		public float k_ControllerSpeed;
-		public float k_ControllerStiffness;
+		public float k_ControllerAcceleration;
 		public bool immovable;
 		public string k_BaseLinkName;
 		
-		public RobotSetting(float k_ControllerAcceleration,
+		
+		public RobotSetting(float k_ControllerStiffness,
 							float k_ControllerDamping,
 							float k_ControllerForceLimit,
 							float k_ControllerSpeed,
-							float k_ControllerStiffness,
+							float k_ControllerAcceleration,
 							bool immovable,
 							string k_BaseLinkName){
 			
