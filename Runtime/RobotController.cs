@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace MalcomKim.ProbRobScene{
-	public class RobotController : MonoBehaviour
+	public class RobotController
 	{
 		public GameObject robot;
 		public int k_NumRobotJoints;
@@ -17,6 +17,7 @@ namespace MalcomKim.ProbRobScene{
 			this.k_JointAssignmentWait = k_JointAssignmentWait;
 			this.LinkNames = LinkNames;
 			
+			m_JointArticulationBodies = new ArticulationBody[k_NumRobotJoints];
 			var linkName = string.Empty;
 			for (var i = 0; i < k_NumRobotJoints; i++)
 			{
@@ -52,7 +53,7 @@ namespace MalcomKim.ProbRobScene{
 			return isRotationFinished;
 		}
 		
-		private IEnumerator MoveToInitialPosition()
+		public IEnumerator MoveToInitialPosition()
 		{
 			bool isRotationFinished = false;
 			while (!isRotationFinished)
@@ -60,10 +61,6 @@ namespace MalcomKim.ProbRobScene{
 				isRotationFinished = ResetRobotToDefaultPosition();
 				yield return new WaitForSeconds(k_JointAssignmentWait);
 			}
-		}
-		
-		public void ResetRobot(){
-			StartCoroutine(MoveToInitialPosition());
 		}
 		
 		
