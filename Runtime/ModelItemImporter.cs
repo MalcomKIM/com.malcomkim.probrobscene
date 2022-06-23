@@ -18,10 +18,10 @@ using Object = UnityEngine.Object;
 namespace MalcomKim.ProbRobScene{
 	public static class ModelItemImporter
 	{
-		private static string MODELS_PARENT = "Models";
+		// private static string MODELS_PARENT = "Models";
 		
-		public static void ImportPrefabs(string k_PrefabDirectory, string k_PrefabSuffix){
-			GameObject Models = GameObject.Find(MODELS_PARENT);
+		public static void ImportPrefabs(string k_PrefabDirectory, string k_PrefabSuffix, GameObject Models){
+			// GameObject Models = GameObject.Find(MODELS_PARENT);
 			
 			if (k_PrefabDirectory != ""){
 				DirectoryInfo d = new DirectoryInfo(@k_PrefabDirectory);
@@ -53,8 +53,8 @@ namespace MalcomKim.ProbRobScene{
 			}
 		}
 		
-		public static GameObject ImportRobot(Object UrdfObject){
-			GameObject Models = GameObject.Find(MODELS_PARENT);
+		public static GameObject ImportRobot(Object UrdfObject, GameObject Models){
+			// GameObject Models = GameObject.Find(MODELS_PARENT);
 			GameObject robot = null;
 			
 			if (UrdfObject != null) {
@@ -65,6 +65,29 @@ namespace MalcomKim.ProbRobScene{
 			
 				if (RobotName != ""){
 					var robotImporter = UrdfRobotExtensions.Create(RobotName, settings);
+					while (robotImporter.MoveNext()) { }
+					
+					// Add robot into the scene as a child node
+					robot = GameObject.Find(_RobotName);
+					robot.tag = "robot";
+					robot.transform.parent = Models.transform;
+					
+				}
+			}
+			return robot;
+		}
+		
+		public static GameObject ImportRobot(string UrdfPath, GameObject Models){
+			// GameObject Models = GameObject.Find(MODELS_PARENT);
+			GameObject robot = null;
+			
+			if (UrdfPath != null) {
+				ImportSettings settings = new ImportSettings();
+				
+				string _RobotName = System.IO.Path.GetFileNameWithoutExtension(UrdfPath);
+			
+				if (UrdfPath != ""){
+					var robotImporter = UrdfRobotExtensions.Create(UrdfPath, settings);
 					while (robotImporter.MoveNext()) { }
 					
 					// Add robot into the scene as a child node

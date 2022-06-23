@@ -15,11 +15,10 @@ using Object = UnityEngine.Object;
 namespace MalcomKim.ProbRobScene{
 	public static class SceneBuilder
 	{
-		private static string MODELS_PARENT = "Models";
+		// private static string MODELS_PARENT = "Models";
 		
-		public static void BuildModels(TextAsset textPRS)
+		public static void BuildModels(TextAsset textPRS, GameObject Models)
 		{
-			GameObject Models = GameObject.Find(MODELS_PARENT);
 			List<ModelItem> ModelItems = new List<ModelItem>();
 			
 			// Get boundaries
@@ -37,6 +36,29 @@ namespace MalcomKim.ProbRobScene{
 			
 			// Generate Model.prs
 			string PrsPath = AssetDatabase.GetAssetPath(textPRS);
+			string save_path = Path.GetDirectoryName(Path.GetFullPath(PrsPath));
+			CreateModelPrs(ModelItems, save_path);
+		}
+		
+		
+		public static void BuildModels(string PrsPath, GameObject Models)
+		{
+			List<ModelItem> ModelItems = new List<ModelItem>();
+			
+			// Get boundaries
+			foreach (Transform child in Models.transform)
+			{
+				// Debug.Log(child.name);
+				GameObject go = GameObject.Find(Models.transform.name + "/" + child.name);
+
+				Bounds bounds = SizeHelper.CaptureBounds(go);
+				Vector3 size = SizeHelper.getBoundsSize(bounds);
+
+				ModelItem mi = new ModelItem(go, size.x, size.y, size.z, child.name);
+				ModelItems.Add(mi);
+			}
+			
+			// Generate Model.prs
 			string save_path = Path.GetDirectoryName(Path.GetFullPath(PrsPath));
 			CreateModelPrs(ModelItems, save_path);
 		}
@@ -91,8 +113,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			return DebugScene;
 		}
 		
-		public static GameObject BuildRealScene(SceneItemList SceneItems, string SceneName, RobotSetting rs){
-			GameObject Models = GameObject.Find(MODELS_PARENT);
+		public static GameObject BuildRealScene(SceneItemList SceneItems, string SceneName, RobotSetting rs, GameObject Models){
 			GameObject RealScene = new GameObject(SceneName);
 			
 			foreach (SceneItem o in SceneItems.objects)
@@ -144,7 +165,8 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 									string RealSceneName,
 									string MaterialPath,
 									string DebugSceneName,
-									RobotSetting rs){
+									RobotSetting rs,
+									GameObject Models){
 			
 			string PrsPath = AssetDatabase.GetAssetPath(textPRS);
 			string PrsName = System.IO.Path.GetFileNameWithoutExtension(PrsPath);	
@@ -153,7 +175,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 
 			BuildDebugScene(MaterialPath, SceneItems, DebugSceneName);
 			
-			GameObject RealScene = BuildRealScene(SceneItems,RealSceneName,rs);
+			GameObject RealScene = BuildRealScene(SceneItems,RealSceneName,rs,Models);
 			
 			return RealScene;
 		}
@@ -164,14 +186,15 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 									string RuntimePath,
 									string PythonPath,
 									string RealSceneName,
-									RobotSetting rs){
+									RobotSetting rs,
+									GameObject Models){
 			
 			string PrsPath = AssetDatabase.GetAssetPath(textPRS);
 			string PrsName = System.IO.Path.GetFileNameWithoutExtension(PrsPath);	
 
 			SceneItemList SceneItems = SceneBuilder.getSceneItemList(PrsPath, PrsName, PythonPath, RuntimePath);
 			
-			GameObject RealScene = BuildRealScene(SceneItems,RealSceneName,rs);
+			GameObject RealScene = BuildRealScene(SceneItems,RealSceneName,rs, Models);
 			
 			return RealScene;
 		}

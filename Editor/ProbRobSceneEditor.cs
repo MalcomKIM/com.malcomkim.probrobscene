@@ -158,7 +158,7 @@ namespace MalcomKim.ProbRobScene.Editor{
 				
 				Models = new GameObject("Models");
 				//=============== Load prefabs ===============
-				ModelItemImporter.ImportPrefabs(k_PrefabDirectory,k_PrefabSuffix);
+				ModelItemImporter.ImportPrefabs(k_PrefabDirectory, k_PrefabSuffix, Models);
 				
 				//=============== Load Robot ===============
 				RobotSetting rs = new RobotSetting(k_ControllerStiffness,
@@ -169,10 +169,10 @@ namespace MalcomKim.ProbRobScene.Editor{
 												immovable,
 												k_BaseLinkName);
 												
-				ModelItemImporter.ImportRobot(UrdfObject);
+				ModelItemImporter.ImportRobot(UrdfObject, Models);
 				
 				//=============== Generate Model.prs ===============
-				SceneBuilder.BuildModels(textPRS);
+				SceneBuilder.BuildModels(textPRS, Models);
 				
 				//=============== Setup the Scene ===============
 				if(debugMode){
@@ -183,7 +183,8 @@ namespace MalcomKim.ProbRobScene.Editor{
 											"RealScene",
 											REL_PACKAGE_MATERIALS_PATH,
 											"DebugScene",
-											rs);
+											rs,
+											Models);
 				}
 				else{
 					RealScene = SceneBuilder.BuildScene(
@@ -191,7 +192,8 @@ namespace MalcomKim.ProbRobScene.Editor{
 											ABS_PACKAGE_RUNTIME_PATH,
 											PythonPath,
 											"RealScene",
-											rs);
+											rs,
+											Models);
 				}
 				
 				
