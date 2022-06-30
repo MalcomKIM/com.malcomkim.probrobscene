@@ -122,7 +122,6 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 				GameObject clone = Object.Instantiate(GameObject.Find(Models.transform.name + "/" + o.model_name));
 				clone.name = o.model_name;
 				
-				
 				Bounds bounds = SizeHelper.CaptureBounds(clone);
 				
 				// Calculate scale from size
@@ -135,23 +134,36 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 				// Calculate displacement
 				bounds = SizeHelper.CaptureBounds(clone);
 				Vector3 center = bounds.center;
-				clone.transform.position += new Vector3(o.position_x, o.position_y, o.position_z) - center;
 				
-				
-				clone.transform.Rotate(o.rotation_x * Mathf.Rad2Deg, o.rotation_y * Mathf.Rad2Deg, o.rotation_z * Mathf.Rad2Deg);
-				
-				// Fix robot position
-				if(clone.tag == "robot"){
-					var controller = clone.GetComponent<Controller>();
-					controller.stiffness = rs.k_ControllerStiffness;
-					controller.damping = rs.k_ControllerDamping;
-					controller.forceLimit = rs.k_ControllerForceLimit;
-					controller.speed = rs.k_ControllerSpeed;
-					controller.acceleration = rs.k_ControllerAcceleration;
-					if(rs.immovable){
-						clone.transform.Find("world/base_link").GetComponent<ArticulationBody>().immovable = true;
-					}						
+				if(!EditorApplication.isPlaying){
+					clone.transform.position += new Vector3(o.position_x, o.position_y, o.position_z) - center;
+					clone.transform.Rotate(o.rotation_x * Mathf.Rad2Deg, o.rotation_y * Mathf.Rad2Deg, o.rotation_z * Mathf.Rad2Deg);
 				}
+				else{
+					// Fix robot position
+					if(clone.tag == "robot"){
+						Transform base_link_transform = clone.transform.Find("world/base_link");
+						ArticulationBody ab = base_link_transform.GetComponent<ArticulationBody>();
+						Vector3 exp_position = base_link_transform.position + new Vector3(o.position_x, o.position_y, o.position_z) - center;
+						
+						ab.TeleportRoot(exp_position, Quaternion.identity);
+						
+						var controller = clone.GetComponent<Controller>();
+						controller.stiffness = rs.k_ControllerStiffness;
+						controller.damping = rs.k_ControllerDamping;
+						controller.forceLimit = rs.k_ControllerForceLimit;
+						controller.speed = rs.k_ControllerSpeed;
+						controller.acceleration = rs.k_ControllerAcceleration;
+						if(rs.immovable){
+							ab.immovable = true; 
+						}						
+					}
+					else{
+						clone.transform.position += new Vector3(o.position_x, o.position_y, o.position_z) - center;
+						clone.transform.Rotate(o.rotation_x * Mathf.Rad2Deg, o.rotation_y * Mathf.Rad2Deg, o.rotation_z * Mathf.Rad2Deg);
+					}
+				}
+				
 				
 				clone.transform.parent = RealScene.transform;
 			}
@@ -207,13 +219,18 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			{	
 				// Clone from models
 				GameObject clone = GameObject.Find(RealScene.transform.name + "/" + o.model_name);	
+				Bounds bounds = SizeHelper.CaptureBounds(clone);
+				Vector3 center = bounds.center;
 
-				if(clone.tag != "robot"){
+				if(clone.tag == "robot"){
+					Transform base_link_transform = clone.transform.Find("world/base_link");
+					ArticulationBody ab = base_link_transform.GetComponent<ArticulationBody>();
+					Vector3 exp_position = base_link_transform.position + new Vector3(o.position_x, o.position_y, o.position_z) - center;
+					ab.TeleportRoot(exp_position, Quaternion.identity);
+				}
+				else{
 					// Calculate displacement
-					Bounds bounds = SizeHelper.CaptureBounds(clone);
-					Vector3 center = bounds.center;
 					clone.transform.position += new Vector3(o.position_x, o.position_y, o.position_z) - center;
-					
 					// Reset rotation
 					clone.transform.rotation = Quaternion.identity;
 					// Update rotation
