@@ -97,7 +97,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 		
 		public static GameObject BuildDebugScene(string MaterialPath, SceneItemList SceneItems, string SceneName){
 			GameObject DebugScene = new GameObject(SceneName); 
-			Material TransparentRed = (Material)AssetDatabase.LoadAssetAtPath(MaterialPath + "/TransparentRed.mat", typeof(Material));
+			Material mat = (Material)AssetDatabase.LoadAssetAtPath(MaterialPath, typeof(Material));
 	 
 			foreach (SceneItem o in SceneItems.objects)
 			{	
@@ -106,7 +106,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 				cube.transform.localScale = new Vector3 (o.size_x, o.size_y, o.size_z);
 				cube.transform.position = new Vector3(o.position_x, o.position_y, o.position_z);
 				cube.transform.rotation = Quaternion.Euler(new Vector3(o.rotation_x * Mathf.Rad2Deg, o.rotation_y * Mathf.Rad2Deg, o.rotation_z * Mathf.Rad2Deg));
-				cube.GetComponent<Renderer>().material = TransparentRed;
+				cube.GetComponent<Renderer>().material = mat;
 				cube.transform.parent = DebugScene.transform;
 			}
 			

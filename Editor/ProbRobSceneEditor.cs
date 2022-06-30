@@ -20,7 +20,6 @@ namespace MalcomKim.ProbRobScene.Editor{
 	public class ProbRobSceneEditor : EditorWindow
 	{
 		// Absolute package paths
-		string ABS_PACKAGE_PATH;
 		string ABS_PACKAGE_RUNTIME_PATH;
 		
 		// Relative package paths
@@ -56,6 +55,7 @@ namespace MalcomKim.ProbRobScene.Editor{
 		GameObject Models;	// hold all the models in the world
 		GameObject RealScene;
 		bool debugMode = false;
+		string DebugMaterialPath;
 		
 
 		[MenuItem("ProbRobScene/ProbRobScene")]
@@ -72,14 +72,12 @@ namespace MalcomKim.ProbRobScene.Editor{
 		
 		public void OnEnable()
 		{
-			// ABS_PACKAGE_PATH = getPackageAbsPath();
 			ABS_PACKAGE_RUNTIME_PATH = OsUtils.getPackageRuntimeAbsPath();
 			if(! Directory.Exists(ABS_PACKAGE_RUNTIME_PATH)){
 				ABS_PACKAGE_RUNTIME_PATH = getPackageAbsPath()+ "/Runtime";
 			}
 			
 			REL_PACKAGE_MATERIALS_PATH= REL_PACKAGE_PATH + "/Materials";
-			Debug.Log(ABS_PACKAGE_PATH);
 			Debug.Log(ABS_PACKAGE_RUNTIME_PATH);
 			Debug.Log(REL_PACKAGE_MATERIALS_PATH);
 			
@@ -135,6 +133,9 @@ namespace MalcomKim.ProbRobScene.Editor{
 			GUILayout.Space(10);
 			
 			debugMode = EditorGUILayout.Toggle("Debug Mode", debugMode);
+			if(debugMode){
+				DebugMaterialPath = EditorGUILayout.TextField("Material path: ", DebugMaterialPath);
+			}
 			
 			GUILayout.Space(10);
 			if (GUILayout.Button("Build Scene"))
@@ -152,6 +153,11 @@ namespace MalcomKim.ProbRobScene.Editor{
 				
 				if(textPRS == null){
 					Debug.LogError(".prs file not found or missing");
+					return;
+				}
+				
+				if(debugMode && !File.Exists(DebugMaterialPath)){
+					Debug.LogError("Material not found or missing");
 					return;
 				}
 				
@@ -181,7 +187,7 @@ namespace MalcomKim.ProbRobScene.Editor{
 											ABS_PACKAGE_RUNTIME_PATH,
 											PythonPath,
 											"RealScene",
-											REL_PACKAGE_MATERIALS_PATH,
+											DebugMaterialPath,
 											"DebugScene",
 											rs,
 											Models);
