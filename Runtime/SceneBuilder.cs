@@ -16,6 +16,7 @@ namespace MalcomKim.ProbRobScene{
 	public static class SceneBuilder
 	{
 		// private static string MODELS_PARENT = "Models";
+		static Vector3 PreviousRobotCenter;
 		
 		public static void BuildModels(TextAsset textPRS, GameObject Models)
 		{
@@ -159,7 +160,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 						Transform base_link_transform = clone.transform.Find("world/base_link");
 						ArticulationBody ab = base_link_transform.GetComponent<ArticulationBody>();
 						Vector3 exp_position = base_link_transform.position + new Vector3(o.position_x, o.position_y, o.position_z) - center;
-						
+						PreviousRobotCenter = new Vector3(o.position_x, o.position_y, o.position_z);
 						ab.TeleportRoot(exp_position, Quaternion.identity);
 						
 						var controller = clone.GetComponent<Controller>();
@@ -233,16 +234,19 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			{	
 				// Clone from models
 				GameObject clone = GameObject.Find(RealScene.transform.name + "/" + o.model_name);	
-				Bounds bounds = SizeHelper.CaptureBounds(clone);
-				Vector3 center = bounds.center;
 
 				if(clone.tag == "robot"){
 					Transform base_link_transform = clone.transform.Find("world/base_link");
 					ArticulationBody ab = base_link_transform.GetComponent<ArticulationBody>();
-					Vector3 exp_position = base_link_transform.position + new Vector3(o.position_x, o.position_y, o.position_z) - center;
+					Vector3 exp_position = base_link_transform.position + new Vector3(o.position_x, o.position_y, o.position_z) - PreviousRobotCenter;
+					PreviousRobotCenter = new Vector3(o.position_x, o.position_y, o.position_z);
 					ab.TeleportRoot(exp_position, Quaternion.identity);
 				}
 				else{
+					
+					
+					Bounds bounds = SizeHelper.CaptureBounds(clone);
+					Vector3 center = bounds.center;
 					// Calculate displacement
 					clone.transform.position += new Vector3(o.position_x, o.position_y, o.position_z) - center;
 					// Reset rotation
