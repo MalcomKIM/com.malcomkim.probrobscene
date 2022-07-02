@@ -136,6 +136,20 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 				Vector3 center = bounds.center;
 				
 				if(!EditorApplication.isPlaying){
+					if(clone.tag == "robot"){
+						Transform base_link_transform = clone.transform.Find("world/base_link");
+						ArticulationBody ab = base_link_transform.GetComponent<ArticulationBody>();
+						
+						var controller = clone.GetComponent<Controller>();
+						controller.stiffness = rs.k_ControllerStiffness;
+						controller.damping = rs.k_ControllerDamping;
+						controller.forceLimit = rs.k_ControllerForceLimit;
+						controller.speed = rs.k_ControllerSpeed;
+						controller.acceleration = rs.k_ControllerAcceleration;
+						if(rs.immovable){
+							ab.immovable = true; 
+						}						
+					}
 					clone.transform.position += new Vector3(o.position_x, o.position_y, o.position_z) - center;
 					clone.transform.Rotate(o.rotation_x * Mathf.Rad2Deg, o.rotation_y * Mathf.Rad2Deg, o.rotation_z * Mathf.Rad2Deg);
 				}
