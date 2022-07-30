@@ -8,8 +8,10 @@ using UnityEditor;
 using UnityEditorInternal;
 using Unity.Robotics.UrdfImporter;
 using Unity.Robotics.UrdfImporter.Control;
+using UnityEngine.Rendering;
 
 using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
 using Object = UnityEngine.Object;
 
 namespace MalcomKim.ProbRobScene{
@@ -96,13 +98,28 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 		}
 		
 		
-		public static GameObject BuildDebugScene(string MaterialPath, SceneItemList SceneItems, string SceneName){
+		public static GameObject BuildDebugScene(SceneItemList SceneItems, string SceneName){
 			GameObject DebugScene = new GameObject(SceneName); 
-			Material mat = (Material)AssetDatabase.LoadAssetAtPath(MaterialPath, typeof(Material));
+			
 	 
 			foreach (SceneItem o in SceneItems.objects)
 			{	
+			
+				Material mat;
+				if (GraphicsSettings.currentRenderPipeline.name == "UniversalRP-HighQuality")
+				{
+					mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+				}
+				else{
+					mat = new Material(Shader.Find("Standard"));
+				}
+				Color color = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f); 
+				color.a = 0.5f;
+				mat.color = color;
+				mat.SetFloat("_Surface", 1f);
+			
 				GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+				cube.GetComponent<BoxCollider>().enabled = false;
 				cube.name = o.model_name;
 				cube.transform.localScale = new Vector3 (o.size_x, o.size_y, o.size_z);
 				cube.transform.position = new Vector3(o.position_x, o.position_y, o.position_z);
@@ -190,7 +207,6 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 									string RuntimePath,
 									string PythonPath,
 									string RealSceneName,
-									string MaterialPath,
 									string DebugSceneName,
 									RobotSetting rs,
 									GameObject Models){
@@ -200,7 +216,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 
 			SceneItemList SceneItems = SceneBuilder.getSceneItemList(PrsPath, PrsName, PythonPath, RuntimePath);
 
-			BuildDebugScene(MaterialPath, SceneItems, DebugSceneName);
+			BuildDebugScene(SceneItems, DebugSceneName);
 			
 			GameObject RealScene = BuildRealScene(SceneItems,RealSceneName,rs,Models);
 			

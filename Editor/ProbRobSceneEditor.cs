@@ -133,9 +133,6 @@ namespace MalcomKim.ProbRobScene.Editor{
 			GUILayout.Space(10);
 			
 			debugMode = EditorGUILayout.Toggle("Debug Mode", debugMode);
-			if(debugMode){
-				DebugMaterialPath = EditorGUILayout.TextField("Material path: ", DebugMaterialPath);
-			}
 			
 			GUILayout.Space(10);
 			if (GUILayout.Button("Build Scene"))
@@ -187,7 +184,6 @@ namespace MalcomKim.ProbRobScene.Editor{
 											ABS_PACKAGE_RUNTIME_PATH,
 											PythonPath,
 											"RealScene",
-											DebugMaterialPath,
 											"DebugScene",
 											rs,
 											Models);
