@@ -153,10 +153,6 @@ namespace MalcomKim.ProbRobScene.Editor{
 					return;
 				}
 				
-				if(debugMode && !File.Exists(DebugMaterialPath)){
-					Debug.LogError("Material not found or missing");
-					return;
-				}
 				
 				
 				Models = new GameObject("Models");
