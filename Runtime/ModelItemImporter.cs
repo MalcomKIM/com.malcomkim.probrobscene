@@ -18,16 +18,15 @@ using Object = UnityEngine.Object;
 namespace MalcomKim.ProbRobScene{
 	public static class ModelItemImporter
 	{
+		// private static string MODELS_PARENT = "Models";
 		
-		// Import prefabs from the given folder
 		public static void ImportPrefabs(string k_PrefabDirectory, string k_PrefabSuffix, GameObject Models){
+			// GameObject Models = GameObject.Find(MODELS_PARENT);
 			
 			if (k_PrefabDirectory != ""){
-				
 				DirectoryInfo d = new DirectoryInfo(@k_PrefabDirectory);
 				FileInfo[] Files = d.GetFiles("*"+ k_PrefabSuffix);
 				
-				// iterate all the prefabs
 				foreach(FileInfo file in Files)
 				{
 					string _prefab = System.IO.Path.GetFileNameWithoutExtension(file.Name);
@@ -35,7 +34,6 @@ namespace MalcomKim.ProbRobScene{
 					Debug.Log(prefab);
 					GameObject go = Object.Instantiate(AssetDatabase.LoadAssetAtPath(prefab,typeof(GameObject))) as GameObject;
 					
-					// default rotation check
 					if(go.transform.rotation == Quaternion.identity){
 						go.name= _prefab;
 						go.transform.parent = Models.transform;
@@ -55,8 +53,8 @@ namespace MalcomKim.ProbRobScene{
 			}
 		}
 		
-		// import robot from drag-and-drop
 		public static GameObject ImportRobot(Object UrdfObject, GameObject Models){
+			// GameObject Models = GameObject.Find(MODELS_PARENT);
 			GameObject robot = null;
 			
 			if (UrdfObject != null) {
@@ -79,8 +77,8 @@ namespace MalcomKim.ProbRobScene{
 			return robot;
 		}
 		
-		// import robot from the path of urdf
 		public static GameObject ImportRobot(string UrdfPath, GameObject Models){
+			// GameObject Models = GameObject.Find(MODELS_PARENT);
 			GameObject robot = null;
 			
 			if (UrdfPath != null) {
