@@ -11,6 +11,7 @@ namespace MalcomKim.ProbRobScene{
 	{
 		private static float MIN_VALUE = 0.000001f;
 		
+		
 		// Capture Bounds (width, height, depth) of a object
 		public static Bounds CaptureBounds(GameObject gobj){
 			Renderer[] renderers = gobj.GetComponentsInChildren<Renderer>();
@@ -32,6 +33,7 @@ namespace MalcomKim.ProbRobScene{
 			return bounds;
 		}
 		
+		// Convert Bounds to Vector3
 		public static Vector3 getBoundsSize(Bounds bounds){
 			float width = bounds.extents.x * 2;
 			float height = bounds.extents.y * 2;
@@ -40,6 +42,7 @@ namespace MalcomKim.ProbRobScene{
 			return new Vector3(width, height, length);
 		}
 		
+		// Convert Size to Scale
 		public static Vector3 CalculateScale(Vector3 exp_size, Vector3 ori_size){
 			ori_size.x = Math.Max(ori_size.x, MIN_VALUE);
 			ori_size.y = Math.Max(ori_size.y, MIN_VALUE);

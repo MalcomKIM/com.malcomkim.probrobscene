@@ -17,7 +17,6 @@ using Object = UnityEngine.Object;
 namespace MalcomKim.ProbRobScene{
 	public static class SceneBuilder
 	{
-		// private static string MODELS_PARENT = "Models";
 		static Vector3 PreviousRobotCenter;
 		
 		public static void BuildModels(TextAsset textPRS, GameObject Models)
