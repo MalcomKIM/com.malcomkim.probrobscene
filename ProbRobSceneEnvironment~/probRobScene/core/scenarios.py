@@ -55,6 +55,7 @@ class Scene:
             ax.set_zlabel("Z")
 
             plt.tight_layout()
+            plt.savefig('D:/University/UoE/Y1S2/FYP/Part2/Figures/Evaluation/GroundTruth/figure.pdf')
             plt.show(block=block)
 
 

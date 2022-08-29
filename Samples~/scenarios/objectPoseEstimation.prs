@@ -4,6 +4,5 @@ floor = Floor on Vector3D(0,0,0)
 table = Table completely on floor
 cube = Cube completely on table, with width 0.2, with length 0.2, with height 0.2
 cube2 = Cube completely on table, facing toward cube
-cube3 = Cube beyond table by 1 from floor
 goal = Goal completely on table, with width 0.4, with length 0.4
 robot = ur3_with_gripper completely on table

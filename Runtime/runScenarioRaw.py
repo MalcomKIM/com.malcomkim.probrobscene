@@ -24,4 +24,4 @@ if __name__ == "__main__":
     for i in range(max_generations):
         print(f"Generation {i}")
         ex_world, used_its = scenario.generate(verbosity=2)
-        ex_world.show_3d()
+        ex_world.show_3d(block=False, show_objects = True)
