@@ -6,6 +6,7 @@ using UnityEngine;
 namespace MalcomKim.ProbRobScene{
 	public class ModelItem
 	{
+		// minimum thickness
 		private float MIN_VALUE = 0.000001f;
 		
 		private GameObject obj;

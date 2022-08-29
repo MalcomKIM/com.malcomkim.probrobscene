@@ -47,9 +47,13 @@ namespace MalcomKim.ProbRobScene.Editor{
 			}
 		  }
 		  
+		  //if (ren) {
+		  //  bounds = ren.bounds;
+		  //}
 		}
 		EditorGUILayout.EndVertical();
 
+		//EditorGUILayout.LabelField("Radius:", bounds.size.magnitude.ToString());
 	  }
 	}
 }
