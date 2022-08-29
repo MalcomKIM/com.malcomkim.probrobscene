@@ -37,7 +37,6 @@ namespace MalcomKim.ProbRobScene{
 			return bounds;
 		}
 		
-		// Convert Bounds to Vector3
 		public static Vector3 getBoundsSize(Bounds bounds){
 			float width = bounds.extents.x * 2;
 			float height = bounds.extents.y * 2;
@@ -46,7 +45,6 @@ namespace MalcomKim.ProbRobScene{
 			return new Vector3(width, height, length);
 		}
 		
-		// Convert Size to Scale
 		public static Vector3 CalculateScale(Vector3 exp_size, Vector3 ori_size){
 			ori_size.x = Math.Max(ori_size.x, MIN_VALUE);
 			ori_size.y = Math.Max(ori_size.y, MIN_VALUE);
@@ -75,7 +73,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			return model_prs;
 		}
 		
-		// Check whether the gameObject exists
+		
 		public static bool GameObjectExits(string GameObjectName){
 			if (GameObject.Find(GameObjectName) != null){
 				return true;
@@ -85,7 +83,6 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			}
 		}
 		
-		// Get Inactive gameObject
 		public static GameObject FindInActiveObjectByName(string name)
 		{
 			Transform[] objs = Resources.FindObjectsOfTypeAll<Transform>() as Transform[];
@@ -102,19 +99,18 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			return null;
 		}
 		
-		// Destroy GameObject
-		public static T SafeDestroyGameObject<T>(T obj) where T : Object
+		 public static T SafeDestroyGameObject<T>(T obj) where T : Object
 		{
-			if (Application.isEditor)
-				Object.DestroyImmediate(obj);
-			else
-				Object.Destroy(obj);
-
-			return null;
+		 if (Application.isEditor)
+			 Object.DestroyImmediate(obj);
+		 else
+			 Object.Destroy(obj);
+		 
+		 return null;
 		}
 		
  
-		// Find python executable on system
+		
 		public static string FindPython(){
 			string OSPlatform = GetOperatingSystem();
 			string PythonPath = "";
@@ -141,7 +137,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			return null;
 		}
 		
-		// start python process
+		
 		public static string python(string python_path, string script_path, string prs_path){
 			string BASE_PROJECT_PATH = Directory.GetCurrentDirectory();
 			
@@ -179,7 +175,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			return json_result;
 		}	
 		
-		// start cmd process
+		
 		public static string cmd(string OSPlatform, string args){
 			string filename = "";
 			
@@ -216,7 +212,7 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			return output;
 		}
 		
-		// get the name of os
+		
 		public static string GetOperatingSystem()
 		{
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -237,17 +233,14 @@ workspace = Cuboid(Vector3D(0, 0, height / 2.0), Vector3D(0,0,0), width, length,
 			return null;
 		}
 		
-		// get the installing path of the package
 		public static string getPackageAbsPath(){
 			return Path.GetFullPath("Packages/com.malcomkim.probrobscene");
 		}
 		
-		// get the runtime path in the package
 		public static string getPackageRuntimeAbsPath(){
 			return getPackageAbsPath() + "/Runtime";
 		}
 
-		// get the editor path in the package
 		public static string getPackageEditorAbsPath(){
 			return getPackageAbsPath() + "/Editor";
 		}
